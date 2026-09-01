@@ -1,782 +1,480 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>متعقب الحياة الشامل</title>
-    <!-- Chart.js -->
+    <title>Life Tracker Pro</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            background: #f4f7fc;
-            padding: 20px;
-            color: #1e293b;
+            font-family: 'Inter', sans-serif;
+            background: #0b1120;
+            color: #e2e8f0;
+            padding: 30px 20px;
+            min-height: 100vh;
+            transition: background 0.3s, color 0.3s;
         }
-        .app {
-            max-width: 1200px;
-            margin: auto;
+        body.light { background: #f1f5f9; color: #0f172a; }
+        .app { max-width: 1300px; margin: auto; }
+
+        /* LOGIN SCREEN */
+        #loginScreen {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: #0b1120;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            flex-direction: column;
+            gap: 30px;
+            transition: 0.5s;
         }
-        h1 {
+        body.light #loginScreen { background: #f1f5f9; }
+        #loginScreen.hidden { opacity: 0; pointer-events: none; }
+        .login-box {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(16px);
+            padding: 50px 40px;
+            border-radius: 30px;
+            border: 1px solid rgba(255,255,255,0.08);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        }
+        body.light .login-box {
+            background: rgba(255,255,255,0.7);
+            border-color: rgba(0,0,0,0.06);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.06);
+        }
+        .login-box h1 {
             font-size: 2rem;
-            margin-bottom: 20px;
-            color: #0f172a;
-            border-bottom: 4px solid #3b82f6;
-            display: inline-block;
-            padding-bottom: 6px;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
+        .login-box p { color: #94a3b8; margin-bottom: 30px; font-size: 0.95rem; }
+        .login-box input {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 14px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05);
+            color: #e2e8f0;
+            font-size: 1rem;
+            margin-bottom: 16px;
+            transition: 0.3s;
+        }
+        body.light .login-box input {
+            background: #f8fafc;
+            border-color: #d1d9e6;
+            color: #0f172a;
+        }
+        .login-box input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+        }
+        .login-box button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 4px 14px rgba(59,130,246,0.3);
+        }
+        .login-box button:hover { transform: scale(1.02); }
+        .login-error {
+            color: #ef4444;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            min-height: 24px;
+        }
+
+        /* HEADER */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(12px);
+            padding: 18px 28px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+        body.light .header {
+            background: rgba(255,255,255,0.7);
+            border-color: rgba(0,0,0,0.06);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.05);
+        }
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .logo span { font-weight: 300; font-size: 0.9rem; color: #94a3b8; display: block; -webkit-text-fill-color: #94a3b8; }
+        .header-actions { display: flex; gap: 12px; align-items: center; }
+        .theme-toggle, .logout-btn {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: #e2e8f0;
+            padding: 10px 16px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: 0.3s;
+        }
+        body.light .theme-toggle, body.light .logout-btn {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+        .theme-toggle:hover, .logout-btn:hover { transform: scale(1.05); }
+        .logout-btn { background: rgba(239,68,68,0.2); color: #ef4444; }
+        body.light .logout-btn { background: #fee2e2; }
+
+        /* TABS */
         .tabs {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
-            margin: 20px 0;
-            background: white;
-            padding: 10px;
-            border-radius: 16px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            gap: 8px;
+            margin-bottom: 25px;
+            background: rgba(255,255,255,0.03);
+            padding: 8px;
+            border-radius: 18px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        body.light .tabs {
+            background: rgba(0,0,0,0.02);
+            border-color: rgba(0,0,0,0.06);
         }
         .tab-btn {
-            padding: 10px 20px;
+            padding: 12px 24px;
             border: none;
-            background: #e2e8f0;
-            border-radius: 30px;
+            background: transparent;
+            border-radius: 14px;
             cursor: pointer;
             font-weight: 600;
-            transition: 0.2s;
             font-size: 0.95rem;
+            transition: 0.25s;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1 1 auto;
+            justify-content: center;
         }
+        .tab-btn i { font-size: 1.1rem; }
+        .tab-btn:hover { color: #e2e8f0; background: rgba(255,255,255,0.05); }
+        body.light .tab-btn:hover { color: #0f172a; background: rgba(0,0,0,0.04); }
         .tab-btn.active {
-            background: #3b82f6;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
             color: white;
-            box-shadow: 0 4px 8px rgba(59,130,246,0.3);
+            box-shadow: 0 8px 24px rgba(59,130,246,0.3);
         }
+
+        /* CONTENT */
         .tab-content {
             display: none;
-            background: white;
-            padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
-            margin-top: 10px;
+            background: rgba(255,255,255,0.04);
+            backdrop-filter: blur(8px);
+            padding: 28px;
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.06);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            animation: fadeUp 0.4s ease;
         }
-        .tab-content.active {
-            display: block;
+        body.light .tab-content {
+            background: rgba(255,255,255,0.7);
+            border-color: rgba(0,0,0,0.06);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.05);
         }
-        /* Cards */
+        .tab-content.active { display: block; }
+        @keyframes fadeUp { 0% { opacity: 0; transform: translateY(15px); } 100% { opacity: 1; transform: translateY(0); } }
+
+        /* CARDS */
         .card {
-            background: #f8fafc;
-            padding: 18px;
-            border-radius: 16px;
-            margin-bottom: 20px;
-            border: 1px solid #e9edf2;
+            background: rgba(255,255,255,0.05);
+            padding: 20px 24px;
+            border-radius: 18px;
+            margin-bottom: 22px;
+            border: 1px solid rgba(255,255,255,0.06);
+            transition: 0.3s;
         }
+        body.light .card {
+            background: white;
+            border-color: #e9edf2;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+        .card:hover { border-color: #3b82f6; }
         .card h3 {
-            margin-bottom: 12px;
-            color: #0f172a;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .flex {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        .flex-1 {
-            flex: 1 1 200px;
-        }
-        input, select, textarea, button {
-            padding: 10px 14px;
-            border-radius: 12px;
-            border: 1px solid #d1d9e6;
-            font-size: 0.95rem;
-            background: white;
-            width: 100%;
-            margin-top: 6px;
-        }
-        button {
-            background: #3b82f6;
-            color: white;
-            border: none;
             font-weight: 600;
-            cursor: pointer;
-            transition: 0.15s;
-            width: auto;
-            padding: 10px 22px;
-        }
-        button:hover {
-            background: #2563eb;
-        }
-        button.danger {
-            background: #ef4444;
-        }
-        button.danger:hover {
-            background: #dc2626;
-        }
-        button.secondary {
-            background: #94a3b8;
-        }
-        .goal-item, .habit-item, .expense-item, .task-item {
-            background: white;
-            padding: 12px 16px;
-            border-radius: 12px;
-            margin: 8px 0;
-            border-right: 4px solid #3b82f6;
+            font-size: 1.2rem;
+            margin-bottom: 14px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
             gap: 10px;
         }
-        .habit-item {
-            border-right-color: #8b5cf6;
+
+        /* FORMS */
+        .flex { display: flex; flex-wrap: wrap; gap: 14px; }
+        .flex-1 { flex: 1 1 200px; }
+        input, select, textarea {
+            padding: 12px 16px;
+            border-radius: 14px;
+            border: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.95rem;
+            background: rgba(255,255,255,0.05);
+            color: #e2e8f0;
+            width: 100%;
+            transition: 0.3s;
+            font-family: 'Inter', sans-serif;
         }
-        .task-item {
-            border-right-color: #f59e0b;
+        body.light input, body.light select, body.light textarea {
+            background: #f8fafc;
+            border-color: #d1d9e6;
+            color: #0f172a;
         }
-        .expense-item {
-            border-right-color: #10b981;
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
         }
+        button {
+            padding: 12px 24px;
+            border-radius: 14px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            box-shadow: 0 4px 14px rgba(59,130,246,0.3);
+        }
+        button:hover { transform: scale(1.02); box-shadow: 0 6px 20px rgba(59,130,246,0.4); }
+        button.danger { background: linear-gradient(135deg, #ef4444, #dc2626); box-shadow: 0 4px 14px rgba(239,68,68,0.3); }
+        button.secondary { background: rgba(255,255,255,0.1); box-shadow: none; }
+        body.light button.secondary { background: #e2e8f0; color: #0f172a; }
+        .small-btn { padding: 6px 14px; font-size: 0.8rem; border-radius: 30px; box-shadow: none; }
+
+        /* ITEMS */
+        .goal-item, .habit-item, .expense-item, .task-item {
+            background: rgba(255,255,255,0.04);
+            padding: 14px 18px;
+            border-radius: 14px;
+            margin: 8px 0;
+            border-left: 4px solid #3b82f6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            transition: 0.3s;
+        }
+        body.light .goal-item, body.light .habit-item, body.light .expense-item, body.light .task-item {
+            background: #f8fafc;
+        }
+        .habit-item { border-left-color: #8b5cf6; }
+        .task-item { border-left-color: #f59e0b; }
+        .expense-item { border-left-color: #10b981; }
         .badge {
-            background: #e2e8f0;
-            padding: 4px 12px;
+            background: rgba(255,255,255,0.08);
+            padding: 4px 14px;
             border-radius: 30px;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
+            font-weight: 600;
         }
+        body.light .badge { background: #e2e8f0; }
         .progress-bar {
-            background: #e2e8f0;
+            background: rgba(255,255,255,0.08);
             border-radius: 30px;
-            height: 10px;
+            height: 8px;
             width: 100%;
             margin: 6px 0;
+            overflow: hidden;
         }
+        body.light .progress-bar { background: #e2e8f0; }
         .progress-fill {
-            height: 10px;
+            height: 8px;
             border-radius: 30px;
-            background: #3b82f6;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
             width: 0%;
+            transition: width 0.5s ease;
         }
-        .chart-container {
-            max-width: 400px;
-            margin: 15px auto;
-        }
-        .small-btn {
-            padding: 4px 12px;
-            font-size: 0.8rem;
-        }
-        .mt-10 { margin-top: 10px; }
-        .mb-10 { margin-bottom: 10px; }
-        .text-muted { color: #64748b; font-size: 0.9rem; }
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-        @media (max-width: 700px) {
-            .grid-2 { grid-template-columns: 1fr; }
-        }
+        .chart-container { max-width: 450px; margin: 20px auto; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 700px) { .grid-2 { grid-template-columns: 1fr; } .header { flex-direction: column; gap: 12px; text-align: center; } }
         .review-box {
-            background: #f1f5f9;
-            padding: 12px;
-            border-radius: 12px;
-            margin: 6px 0;
+            background: rgba(255,255,255,0.04);
+            padding: 16px;
+            border-radius: 14px;
+            margin: 8px 0;
+            border: 1px solid rgba(255,255,255,0.06);
         }
+        body.light .review-box { background: #f1f5f9; border-color: #e9edf2; }
+        .text-muted { color: #94a3b8; font-size: 0.9rem; }
+        body.light .text-muted { color: #64748b; }
+        .mt-10 { margin-top: 12px; }
+        .mb-10 { margin-bottom: 12px; }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 10px; }
+
+        #mainApp { display: none; }
+        #mainApp.visible { display: block; }
     </style>
 </head>
 <body>
-<div class="app">
-    <h1>🧭 متعقب الحياة</h1>
 
-    <!-- Tabs -->
-    <div class="tabs">
-        <button class="tab-btn active" data-tab="dashboard">📊 داشبورد</button>
-        <button class="tab-btn" data-tab="goals">🎯 الأهداف والعادات</button>
-        <button class="tab-btn" data-tab="content">📝 جدول المحتوى</button>
-        <button class="tab-btn" data-tab="reviews">📆 المراجعات</button>
-        <button class="tab-btn" data-tab="expenses">💰 المصروفات</button>
+<!-- LOGIN SCREEN -->
+<div id="loginScreen">
+    <div class="login-box">
+        <h1><i class="fas fa-compass"></i> Life Tracker</h1>
+        <p>Enter your password to continue</p>
+        <input type="password" id="loginPassword" placeholder="Enter password..." onkeydown="if(event.key==='Enter') login()" />
+        <button onclick="login()"><i class="fas fa-unlock"></i> Unlock</button>
+        <div class="login-error" id="loginError"></div>
     </div>
+</div>
 
-    <!-- ==================== DASHBOARD ==================== -->
-    <div id="dashboard" class="tab-content active">
-        <h2>لوحة التحكم</h2>
-        <div class="grid-2">
-            <div class="card">
-                <h3>🎯 الأهداف</h3>
-                <div id="dash-goals-count">0</div>
-                <div class="progress-bar"><div id="dash-goals-progress" class="progress-fill" style="width:0%"></div></div>
-                <div class="text-muted" id="dash-goals-detail"></div>
+<!-- MAIN APP -->
+<div id="mainApp">
+    <div class="app">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <h1><i class="fas fa-compass" style="background:linear-gradient(135deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;"></i> Life Tracker</h1>
+                <span>Your ultimate life dashboard</span>
             </div>
-            <div class="card">
-                <h3>✅ العادات اليومية</h3>
-                <div id="dash-habits-count">0</div>
-                <div class="progress-bar"><div id="dash-habits-progress" class="progress-fill" style="width:0%"></div></div>
-                <div class="text-muted" id="dash-habits-detail"></div>
-            </div>
-            <div class="card">
-                <h3>💰 المصروفات</h3>
-                <div id="dash-expenses-total">0</div>
-                <div class="text-muted" id="dash-expenses-count"></div>
-            </div>
-            <div class="card">
-                <h3>📋 مهام اليوم</h3>
-                <div id="dash-tasks-today">0</div>
-                <div class="text-muted" id="dash-tasks-done"></div>
+            <div class="header-actions">
+                <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme"><i class="fas fa-moon"></i></button>
+                <button class="logout-btn" onclick="logout()" title="Logout"><i class="fas fa-sign-out-alt"></i> Logout</button>
             </div>
         </div>
-        <div class="card">
-            <h3>أخر نشاط</h3>
-            <div id="dash-last-activity" class="text-muted">لا يوجد نشاط بعد</div>
-        </div>
-    </div>
 
-    <!-- ==================== GOALS & HABITS ==================== -->
-    <div id="goals" class="tab-content">
-        <h2>🎯 الأهداف والعادات</h2>
-        <div class="card">
-            <h3>إضافة هدف جديد</h3>
-            <div class="flex">
-                <div class="flex-1"><input type="text" id="goal-name" placeholder="اسم الهدف (مثال: تعلم البرمجة)" /></div>
-                <button onclick="addGoal()">➕ إضافة هدف</button>
-            </div>
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="dashboard"><i class="fas fa-chart-pie"></i> Dashboard</button>
+            <button class="tab-btn" data-tab="goals"><i class="fas fa-bullseye"></i> Goals & Habits</button>
+            <button class="tab-btn" data-tab="content"><i class="fas fa-calendar-day"></i> Content</button>
+            <button class="tab-btn" data-tab="reviews"><i class="fas fa-history"></i> Reviews</button>
+            <button class="tab-btn" data-tab="expenses"><i class="fas fa-wallet"></i> Expenses</button>
         </div>
-        <div id="goals-list"></div>
-    </div>
 
-    <!-- ==================== CONTENT SCHEDULE ==================== -->
-    <div id="content" class="tab-content">
-        <h2>📝 جدول المحتوى اليومي</h2>
-        <div class="card">
-            <div class="flex">
-                <div class="flex-1"><input type="date" id="content-date" /></div>
-                <div class="flex-1"><input type="text" id="content-task" placeholder="المهمة (مثال: تصوير حلقة)" /></div>
-                <button onclick="addTask()">➕ إضافة</button>
+        <!-- DASHBOARD -->
+        <div id="dashboard" class="tab-content active">
+            <h2 style="margin-bottom:20px;"><i class="fas fa-chart-line"></i> Dashboard Overview</h2>
+            <div class="grid-2">
+                <div class="card"><h3><i class="fas fa-bullseye"></i> Goals</h3><div id="dash-goals-count" style="font-size:2rem;font-weight:700;">0</div><div class="progress-bar"><div id="dash-goals-progress" class="progress-fill" style="width:0%"></div></div><div class="text-muted" id="dash-goals-detail"></div></div>
+                <div class="card"><h3><i class="fas fa-check-circle"></i> Daily Habits</h3><div id="dash-habits-count" style="font-size:2rem;font-weight:700;">0</div><div class="progress-bar"><div id="dash-habits-progress" class="progress-fill" style="width:0%"></div></div><div class="text-muted" id="dash-habits-detail"></div></div>
+                <div class="card"><h3><i class="fas fa-coins"></i> Expenses</h3><div id="dash-expenses-total" style="font-size:2rem;font-weight:700;">$0</div><div class="text-muted" id="dash-expenses-count"></div></div>
+                <div class="card"><h3><i class="fas fa-tasks"></i> Today's Tasks</h3><div id="dash-tasks-today" style="font-size:2rem;font-weight:700;">0</div><div class="text-muted" id="dash-tasks-done"></div></div>
             </div>
+            <div class="card"><h3><i class="fas fa-clock"></i> Recent Activity</h3><div id="dash-last-activity" class="text-muted">No activity yet</div></div>
         </div>
-        <div id="tasks-container"></div>
-    </div>
 
-    <!-- ==================== REVIEWS ==================== -->
-    <div id="reviews" class="tab-content">
-        <h2>📆 المراجعات الشهرية والسنوية</h2>
-        <div class="card">
-            <h3>مراجعة شهرية</h3>
-            <div class="flex">
-                <div class="flex-1"><input type="month" id="review-month" /></div>
-                <div class="flex-1"><textarea id="review-month-text" rows="3" placeholder="اكتب ملاحظاتك عن هذا الشهر..."></textarea></div>
-                <button onclick="saveMonthlyReview()">💾 حفظ المراجعة</button>
-            </div>
-            <div id="monthly-reviews-list" class="mt-10"></div>
+        <!-- GOALS -->
+        <div id="goals" class="tab-content">
+            <h2 style="margin-bottom:20px;"><i class="fas fa-bullseye"></i> Goals & Habits</h2>
+            <div class="card"><h3><i class="fas fa-plus-circle"></i> Add New Goal</h3><div class="flex"><div class="flex-1"><input type="text" id="goal-name" placeholder="Goal name (e.g. Learn Programming)" /></div><button onclick="addGoal()"><i class="fas fa-plus"></i> Add Goal</button></div></div>
+            <div id="goals-list"></div>
         </div>
-        <div class="card">
-            <h3>مراجعة سنوية</h3>
-            <div class="flex">
-                <div class="flex-1"><input type="number" id="review-year" placeholder="السنة (مثال: 2026)" /></div>
-                <div class="flex-1"><textarea id="review-year-text" rows="3" placeholder="مراجعة شاملة للسنة..."></textarea></div>
-                <button onclick="saveYearlyReview()">💾 حفظ المراجعة السنوية</button>
-            </div>
-            <div id="yearly-reviews-list" class="mt-10"></div>
+
+        <!-- CONTENT -->
+        <div id="content" class="tab-content">
+            <h2 style="margin-bottom:20px;"><i class="fas fa-calendar-day"></i> Content Schedule</h2>
+            <div class="card"><div class="flex"><div class="flex-1"><input type="date" id="content-date" /></div><div class="flex-1"><input type="text" id="content-task" placeholder="Task (e.g. Film episode)" /></div><button onclick="addTask()"><i class="fas fa-plus"></i> Add</button></div></div>
+            <div id="tasks-container"></div>
+        </div>
+
+        <!-- REVIEWS -->
+        <div id="reviews" class="tab-content">
+            <h2 style="margin-bottom:20px;"><i class="fas fa-history"></i> Monthly & Yearly Reviews</h2>
+            <div class="card"><h3><i class="fas fa-calendar-alt"></i> Monthly Review</h3><div class="flex"><div class="flex-1"><input type="month" id="review-month" /></div><div class="flex-1"><textarea id="review-month-text" rows="3" placeholder="Write your monthly notes..."></textarea></div><button onclick="saveMonthlyReview()"><i class="fas fa-save"></i> Save</button></div><div id="monthly-reviews-list" class="mt-10"></div></div>
+            <div class="card"><h3><i class="fas fa-calendar-check"></i> Yearly Review</h3><div class="flex"><div class="flex-1"><input type="number" id="review-year" placeholder="Year (e.g. 2026)" /></div><div class="flex-1"><textarea id="review-year-text" rows="3" placeholder="Comprehensive yearly review..."></textarea></div><button onclick="saveYearlyReview()"><i class="fas fa-save"></i> Save</button></div><div id="yearly-reviews-list" class="mt-10"></div></div>
+        </div>
+
+        <!-- EXPENSES -->
+        <div id="expenses" class="tab-content">
+            <h2 style="margin-bottom:20px;"><i class="fas fa-wallet"></i> Expenses</h2>
+            <div class="card"><h3><i class="fas fa-plus-circle"></i> Add Expense</h3><div class="flex"><div class="flex-1"><input type="text" id="expense-desc" placeholder="Description" /></div><div class="flex-1"><input type="number" id="expense-amount" placeholder="Amount" /></div><div class="flex-1"><input type="date" id="expense-date" /></div><div class="flex-1"><input type="text" id="expense-category" placeholder="Category (e.g. Food)" /></div><button onclick="addExpense()"><i class="fas fa-plus"></i> Add</button></div></div>
+            <div class="card"><h3><i class="fas fa-chart-pie"></i> Expense Chart</h3><div class="chart-container"><canvas id="expenseChart"></canvas></div><button onclick="renderExpenseChart()" class="secondary small-btn"><i class="fas fa-sync-alt"></i> Refresh</button></div>
+            <div id="expenses-list"></div>
         </div>
     </div>
-
-    <!-- ==================== EXPENSES ==================== -->
-    <div id="expenses" class="tab-content">
-        <h2>💰 المصروفات</h2>
-        <div class="card">
-            <h3>إضافة مصروف</h3>
-            <div class="flex">
-                <div class="flex-1"><input type="text" id="expense-desc" placeholder="الوصف" /></div>
-                <div class="flex-1"><input type="number" id="expense-amount" placeholder="المبلغ" /></div>
-                <div class="flex-1"><input type="date" id="expense-date" /></div>
-                <div class="flex-1"><input type="text" id="expense-category" placeholder="الفئة (مثل: طعام، مواصلات)" /></div>
-                <button onclick="addExpense()">➕ إضافة</button>
-            </div>
-        </div>
-        <div class="card">
-            <h3>الرسم البياني للمصروفات</h3>
-            <div class="chart-container"><canvas id="expenseChart"></canvas></div>
-            <button onclick="renderExpenseChart()" class="secondary small-btn">تحديث الرسم</button>
-        </div>
-        <div id="expenses-list"></div>
-    </div>
-
 </div>
 
 <script>
-    // ----------------------------------------------
-    // DATA LAYER (localStorage)
-    // ----------------------------------------------
-    const STORAGE_KEY = 'lifeTrackerData';
+// ==================== LOGIN SYSTEM ====================
+const PASSWORD_KEY = 'lifeTrackerPassword';
+const DEFAULT_PASSWORD = 'admin123';
 
-    function getData() {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (raw) return JSON.parse(raw);
-        return {
-            goals: [],            // [{id, name, habits: [{id, name, log: {date: boolean}}]}]
-            tasks: [],            // [{id, date, text, done}]
-            monthlyReviews: [],   // [{month, text}]
-            yearlyReviews: [],    // [{year, text}]
-            expenses: []          // [{id, desc, amount, date, category}]
-        };
-    }
+if (!localStorage.getItem(PASSWORD_KEY)) {
+    localStorage.setItem(PASSWORD_KEY, DEFAULT_PASSWORD);
+}
 
-    function saveData(data) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    }
-
-    // helpers
-    function generateId() { return Date.now() + '_' + Math.random().toString(36).slice(2, 6); }
-    function todayStr() { return new Date().toISOString().slice(0,10); }
-
-    // ----------------------------------------------
-    // RENDER FUNCTIONS
-    // ----------------------------------------------
-    function renderAll() {
-        renderDashboard();
-        renderGoals();
-        renderTasks();
-        renderMonthlyReviews();
-        renderYearlyReviews();
-        renderExpenses();
-        renderExpenseChart();
-    }
-
-    // ----- DASHBOARD -----
-    function renderDashboard() {
-        const data = getData();
-        const goals = data.goals;
-        const habits = goals.flatMap(g => g.habits);
-        const tasksToday = data.tasks.filter(t => t.date === todayStr());
-        const expenses = data.expenses;
-
-        document.getElementById('dash-goals-count').innerText = goals.length;
-        const totalHabits = habits.length;
-        let doneHabitsToday = 0;
-        habits.forEach(h => {
-            if (h.log && h.log[todayStr()] === true) doneHabitsToday++;
-        });
-        document.getElementById('dash-habits-count').innerText = `${doneHabitsToday} / ${totalHabits} اليوم`;
-        const habitPercent = totalHabits ? Math.round((doneHabitsToday/totalHabits)*100) : 0;
-        document.getElementById('dash-habits-progress').style.width = habitPercent + '%';
-
-        // goals progress: average of habits completion over last 7 days?
-        // simpler: just show number of goals with at least one habit done today
-        let goalsWithHabitDone = 0;
-        goals.forEach(g => {
-            const anyDone = g.habits.some(h => h.log && h.log[todayStr()] === true);
-            if (anyDone) goalsWithHabitDone++;
-        });
-        document.getElementById('dash-goals-progress').style.width = goals.length ? Math.round((goalsWithHabitDone/goals.length)*100) + '%' : '0%';
-        document.getElementById('dash-goals-detail').innerText = `${goalsWithHabitDone} من ${goals.length} أهداف فيها عادة ممارسة اليوم`;
-
-        const totalExpense = expenses.reduce((sum, e) => sum + Number(e.amount), 0);
-        document.getElementById('dash-expenses-total').innerText = totalExpense.toFixed(2) + ' جنيه';
-        document.getElementById('dash-expenses-count').innerText = `عدد المصروفات: ${expenses.length}`;
-
-        const tasksTodayDone = tasksToday.filter(t => t.done).length;
-        document.getElementById('dash-tasks-today').innerText = tasksToday.length;
-        document.getElementById('dash-tasks-done').innerText = `تم إنجاز ${tasksTodayDone} من ${tasksToday.length}`;
-
-        // last activity - just show latest expense or task
-        let last = 'لا يوجد نشاط بعد';
-        if (expenses.length) {
-            const lastExp = expenses[expenses.length-1];
-            last = `آخر مصروف: ${lastExp.desc} (${lastExp.amount}) في ${lastExp.date}`;
-        } else if (data.tasks.length) {
-            const lastTask = data.tasks[data.tasks.length-1];
-            last = `آخر مهمة: ${lastTask.text} (${lastTask.date})`;
-        }
-        document.getElementById('dash-last-activity').innerText = last;
-    }
-
-    // ----- GOALS & HABITS -----
-    function renderGoals() {
-        const data = getData();
-        const container = document.getElementById('goals-list');
-        if (data.goals.length === 0) {
-            container.innerHTML = '<div class="text-muted">لا توجد أهداف بعد، أضف هدفك الأول!</div>';
-            return;
-        }
-        let html = '';
-        data.goals.forEach((goal, idx) => {
-            const habitsHtml = goal.habits.map(h => {
-                const doneToday = h.log && h.log[todayStr()] === true;
-                // compute completion last 7 days
-                let days = [];
-                for (let i = 6; i >= 0; i--) {
-                    const d = new Date();
-                    d.setDate(d.getDate() - i);
-                    const ds = d.toISOString().slice(0,10);
-                    const val = h.log && h.log[ds] === true ? 1 : 0;
-                    days.push(val);
-                }
-                const totalDone = days.reduce((a,b) => a+b, 0);
-                const percent = Math.round((totalDone/7)*100);
-                return `
-                    <div class="habit-item">
-                        <span><strong>${h.name}</strong> <span class="badge">آخر 7 أيام: ${percent}%</span></span>
-                        <div>
-                            <button class="small-btn ${doneToday ? 'secondary' : ''}" onclick="toggleHabit('${goal.id}','${h.id}')">
-                                ${doneToday ? '✔️ تم' : '☑️ سجل اليوم'}
-                            </button>
-                            <button class="small-btn danger" onclick="deleteHabit('${goal.id}','${h.id}')">🗑️</button>
-                            <button class="small-btn secondary" onclick="showHabitChart('${goal.id}','${h.id}')">📈 رسم بياني</button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            html += `
-                <div class="card">
-                    <h3>
-                        <span>${goal.name}</span>
-                        <span>
-                            <button class="small-btn" onclick="addHabit('${goal.id}')">➕ عادة</button>
-                            <button class="small-btn danger" onclick="deleteGoal('${goal.id}')">🗑️ حذف الهدف</button>
-                        </span>
-                    </h3>
-                    <div>${habitsHtml || '<div class="text-muted">لا توجد عادات لهذا الهدف، أضف عادة.</div>'}</div>
-                </div>
-            `;
-        });
-        container.innerHTML = html;
-    }
-
-    function addGoal() {
-        const input = document.getElementById('goal-name');
-        const name = input.value.trim();
-        if (!name) return alert('أدخل اسم الهدف');
-        const data = getData();
-        data.goals.push({ id: generateId(), name, habits: [] });
-        saveData(data);
+function login() {
+    const input = document.getElementById('loginPassword');
+    const error = document.getElementById('loginError');
+    const entered = input.value.trim();
+    
+    if (entered === localStorage.getItem(PASSWORD_KEY)) {
+        document.getElementById('loginScreen').classList.add('hidden');
+        document.getElementById('mainApp').classList.add('visible');
+        error.textContent = '';
         input.value = '';
         renderAll();
+    } else {
+        error.textContent = '❌ Incorrect password. Try again.';
+        input.value = '';
+        input.focus();
     }
+}
 
-    function deleteGoal(goalId) {
-        if (!confirm('هل تريد حذف هذا الهدف وجميع عاداته؟')) return;
-        const data = getData();
-        data.goals = data.goals.filter(g => g.id !== goalId);
-        saveData(data);
-        renderAll();
-    }
+function logout() {
+    document.getElementById('loginScreen').classList.remove('hidden');
+    document.getElementById('mainApp').classList.remove('visible');
+    document.getElementById('loginPassword').value = '';
+    document.getElementById('loginError').textContent = '';
+}
 
-    function addHabit(goalId) {
-        const name = prompt('أدخل اسم العادة (مثال: ممارسة ساعة برمجة)');
-        if (!name) return;
-        const data = getData();
-        const goal = data.goals.find(g => g.id === goalId);
-        if (!goal) return;
-        goal.habits.push({ id: generateId(), name, log: {} });
-        saveData(data);
-        renderAll();
-    }
+// ==================== MAIN APP LOGIC ====================
+const STORAGE_KEY = 'lifeTrackerData';
+function getData(){const raw=localStorage.getItem(STORAGE_KEY);if(raw)return JSON.parse(raw);return{goals:[],tasks:[],monthlyReviews:[],yearlyReviews:[],expenses:[]};}
+function saveData(data){localStorage.setItem(STORAGE_KEY,JSON.stringify(data));}
+function generateId(){return Date.now()+'_'+Math.random().toString(36).slice(2,6);}
+function todayStr(){return new Date().toISOString().slice(0,10);}
+function renderAll(){renderDashboard();renderGoals();renderTasks();renderMonthlyReviews();renderYearlyReviews();renderExpenses();renderExpenseChart();}
 
-    function toggleHabit(goalId, habitId) {
-        const data = getData();
-        const goal = data.goals.find(g => g.id === goalId);
-        if (!goal) return;
-        const habit = goal.habits.find(h => h.id === habitId);
-        if (!habit) return;
-        if (!habit.log) habit.log = {};
-        const today = todayStr();
-        habit.log[today] = !habit.log[today]; // toggle
-        saveData(data);
-        renderAll();
-    }
+function toggleTheme(){document.body.classList.toggle('light');localStorage.setItem('theme',document.body.classList.contains('light')?'light':'dark');}
+(function(){if(localStorage.getItem('theme')==='light')document.body.classList.add('light');})();
 
-    function deleteHabit(goalId, habitId) {
-        if (!confirm('حذف العادة؟')) return;
-        const data = getData();
-        const goal = data.goals.find(g => g.id === goalId);
-        if (!goal) return;
-        goal.habits = goal.habits.filter(h => h.id !== habitId);
-        saveData(data);
-        renderAll();
-    }
+function renderDashboard(){const data=getData();const goals=data.goals;const habits=goals.flatMap(g=>g.habits);const tasksToday=data.tasks.filter(t=>t.date===todayStr());const expenses=data.expenses;document.getElementById('dash-goals-count').innerText=goals.length;let doneHabitsToday=0;habits.forEach(h=>{if(h.log&&h.log[todayStr()]===true)doneHabitsToday++;});document.getElementById('dash-habits-count').innerText=doneHabitsToday+' / '+habits.length+' today';const habitPercent=habits.length?Math.round((doneHabitsToday/habits.length)*100):0;document.getElementById('dash-habits-progress').style.width=habitPercent+'%';let goalsWithHabitDone=0;goals.forEach(g=>{const anyDone=g.habits.some(h=>h.log&&h.log[todayStr()]===true);if(anyDone)goalsWithHabitDone++;});document.getElementById('dash-goals-progress').style.width=goals.length?Math.round((goalsWithHabitDone/goals.length)*100)+'%':'0%';document.getElementById('dash-goals-detail').innerText=goalsWithHabitDone+' of '+goals.length+' goals with habit done today';const totalExpense=expenses.reduce((sum,e)=>sum+Number(e.amount),0);document.getElementById('dash-expenses-total').innerText='$'+totalExpense.toFixed(2);document.getElementById('dash-expenses-count').innerText='Total entries: '+expenses.length;const tasksTodayDone=tasksToday.filter(t=>t.done).length;document.getElementById('dash-tasks-today').innerText=tasksToday.length;document.getElementById('dash-tasks-done').innerText='Done '+tasksTodayDone+' of '+tasksToday.length;let last='No activity yet';if(expenses.length){const lastExp=expenses[expenses.length-1];last='Last expense: '+lastExp.desc+' ($'+lastExp.amount+') on '+lastExp.date;}else if(data.tasks.length){const lastTask=data.tasks[data.tasks.length-1];last='Last task: '+lastTask.text+' ('+lastTask.date+')';}document.getElementById('dash-last-activity').innerText=last;}
 
-    function showHabitChart(goalId, habitId) {
-        const data = getData();
-        const goal = data.goals.find(g => g.id === goalId);
-        if (!goal) return;
-        const habit = goal.habits.find(h => h.id === habitId);
-        if (!habit) return;
-        // prepare last 30 days
-        const labels = [];
-        const values = [];
-        for (let i = 29; i >= 0; i--) {
-            const d = new Date();
-            d.setDate(d.getDate() - i);
-            const ds = d.toISOString().slice(0,10);
-            labels.push(ds);
-            values.push(habit.log && habit.log[ds] ? 1 : 0);
-        }
-        // open a new window with chart
-        const win = window.open('', '_blank', 'width=600,height=400');
-        win.document.write(`
-            <html><head><title>رسم بياني: ${habit.name}</title>
-            <script src="https://cdn.jsdelivr.net/npm/chart.js"><\/script>
-            <style>body { direction: rtl; padding:20px; }</style>
-            </head><body>
-            <h2>${habit.name}</h2>
-            <canvas id="chart" width="500" height="300"></canvas>
-            <script>
-                const ctx = document.getElementById('chart').getContext('2d');
-                new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: ${JSON.stringify(labels)},
-                        datasets: [{
-                            label: 'تم الإنجاز (1 = نعم)',
-                            data: ${JSON.stringify(values)},
-                            backgroundColor: '#3b82f6'
-                        }]
-                    },
-                    options: {
-                        scales: { y: { min: 0, max: 1, ticks: { stepSize: 1 } } }
-                    }
-                });
-            <\/script>
-            </body></html>
-        `);
-        win.document.close();
-    }
+function renderGoals(){const data=getData();const container=document.getElementById('goals-list');if(data.goals.length===0){container.innerHTML='<div class="text-muted">No goals yet. Add your first goal!</div>';return;}let html='';data.goals.forEach((goal,idx)=>{const habitsHtml=goal.habits.map(h=>{const doneToday=h.log&&h.log[todayStr()]===true;let days=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const ds=d.toISOString().slice(0,10);const val=h.log&&h.log[ds]===true?1:0;days.push(val);}const totalDone=days.reduce((a,b)=>a+b,0);const percent=Math.round((totalDone/7)*100);return'<div class="habit-item"><span><strong>'+h.name+'</strong> <span class="badge">Last 7 days: '+percent+'%</span></span><div><button class="small-btn '+(doneToday?'secondary':'')+'" onclick="toggleHabit(\''+goal.id+'\',\''+h.id+'\')">'+(doneToday?'<i class="fas fa-check"></i> Done':'<i class="fas fa-circle"></i> Log today')+'</button><button class="small-btn danger" onclick="deleteHabit(\''+goal.id+'\',\''+h.id+'\')"><i class="fas fa-trash"></i></button><button class="small-btn secondary" onclick="showHabitChart(\''+goal.id+'\',\''+h.id+'\')"><i class="fas fa-chart-bar"></i> Chart</button></div></div>';}).join('');html+='<div class="card"><h3><span><i class="fas fa-flag"></i> '+goal.name+'</span><span><button class="small-btn" onclick="addHabit(\''+goal.id+'\')"><i class="fas fa-plus"></i> Habit</button><button class="small-btn danger" onclick="deleteGoal(\''+goal.id+'\')"><i class="fas fa-trash"></i> Delete</button></span></h3><div>'+(habitsHtml||'<div class="text-muted">No habits yet. Add one!</div>')+'</div></div>';});container.innerHTML=html;}
 
-    // ----- CONTENT TASKS -----
-    function renderTasks() {
-        const data = getData();
-        const container = document.getElementById('tasks-container');
-        // group by date
-        const grouped = {};
-        data.tasks.forEach(t => {
-            if (!grouped[t.date]) grouped[t.date] = [];
-            grouped[t.date].push(t);
-        });
-        const sortedDates = Object.keys(grouped).sort((a,b) => a.localeCompare(b));
-        if (sortedDates.length === 0) {
-            container.innerHTML = '<div class="text-muted">لا توجد مهام، أضف مهمة لليوم.</div>';
-            return;
-        }
-        let html = '';
-        sortedDates.forEach(date => {
-            const tasks = grouped[date];
-            const total = tasks.length;
-            const done = tasks.filter(t => t.done).length;
-            html += `<div class="card"><h3>📅 ${date} <span class="badge">${done}/${total} مكتملة</span></h3>`;
-            tasks.forEach(t => {
-                html += `
-                    <div class="task-item">
-                        <span style="${t.done ? 'text-decoration:line-through; color:#94a3b8;' : ''}">${t.text}</span>
-                        <div>
-                            <button class="small-btn ${t.done ? 'secondary' : ''}" onclick="toggleTask('${t.id}')">
-                                ${t.done ? '✔️ تم' : '☑️ إنجاز'}
-                            </button>
-                            <button class="small-btn danger" onclick="deleteTask('${t.id}')">🗑️</button>
-                        </div>
-                    </div>
-                `;
-            });
-            html += '</div>';
-        });
-        container.innerHTML = html;
-        // set default date
-        document.getElementById('content-date').value = todayStr();
-    }
-
-    function addTask() {
-        const date = document.getElementById('content-date').value;
-        const text = document.getElementById('content-task').value.trim();
-        if (!date || !text) return alert('أدخل التاريخ والمهمة');
-        const data = getData();
-        data.tasks.push({ id: generateId(), date, text, done: false });
-        saveData(data);
-        document.getElementById('content-task').value = '';
-        renderAll();
-    }
-
-    function toggleTask(id) {
-        const data = getData();
-        const task = data.tasks.find(t => t.id === id);
-        if (!task) return;
-        task.done = !task.done;
-        saveData(data);
-        renderAll();
-    }
-
-    function deleteTask(id) {
-        if (!confirm('حذف المهمة؟')) return;
-        const data = getData();
-        data.tasks = data.tasks.filter(t => t.id !== id);
-        saveData(data);
-        renderAll();
-    }
-
-    // ----- REVIEWS -----
-    function renderMonthlyReviews() {
-        const data = getData();
-        const container = document.getElementById('monthly-reviews-list');
-        if (data.monthlyReviews.length === 0) {
-            container.innerHTML = '<div class="text-muted">لا توجد مراجعات شهرية بعد.</div>';
-            return;
-        }
-        let html = '';
-        data.monthlyReviews.forEach(r => {
-            html += `<div class="review-box"><strong>${r.month}</strong><br>${r.text}</div>`;
-        });
-        container.innerHTML = html;
-        // set default month
-        const now = new Date();
-        document.getElementById('review-month').value = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
-    }
-
-    function saveMonthlyReview() {
-        const month = document.getElementById('review-month').value;
-        const text = document.getElementById('review-month-text').value.trim();
-        if (!month || !text) return alert('أدخل الشهر والمراجعة');
-        const data = getData();
-        // replace if exists
-        const idx = data.monthlyReviews.findIndex(r => r.month === month);
-        if (idx > -1) data.monthlyReviews[idx].text = text;
-        else data.monthlyReviews.push({ month, text });
-        saveData(data);
-        document.getElementById('review-month-text').value = '';
-        renderAll();
-    }
-
-    function renderYearlyReviews() {
-        const data = getData();
-        const container = document.getElementById('yearly-reviews-list');
-        if (data.yearlyReviews.length === 0) {
-            container.innerHTML = '<div class="text-muted">لا توجد مراجعات سنوية بعد.</div>';
-            return;
-        }
-        let html = '';
-        data.yearlyReviews.forEach(r => {
-            html += `<div class="review-box"><strong>${r.year}</strong><br>${r.text}</div>`;
-        });
-        container.innerHTML = html;
-        document.getElementById('review-year').value = new Date().getFullYear();
-    }
-
-    function saveYearlyReview() {
-        const year = document.getElementById('review-year').value;
-        const text = document.getElementById('review-year-text').value.trim();
-        if (!year || !text) return alert('أدخل السنة والمراجعة');
-        const data = getData();
-        const idx = data.yearlyReviews.findIndex(r => r.year === year);
-        if (idx > -1) data.yearlyReviews[idx].text = text;
-        else data.yearlyReviews.push({ year, text });
-        saveData(data);
-        document.getElementById('review-year-text').value = '';
-        renderAll();
-    }
-
-    // ----- EXPENSES -----
-    function renderExpenses() {
-        const data = getData();
-        const container = document.getElementById('expenses-list');
-        if (data.expenses.length === 0) {
-            container.innerHTML = '<div class="text-muted">لا توجد مصروفات.</div>';
-            return;
-        }
-        let html = '';
-        data.expenses.slice().reverse().forEach(e => {
-            html += `
-                <div class="expense-item">
-                    <span><strong>${e.desc}</strong> (${e.category || 'بدون فئة'}) - ${e.date}</span>
-                    <span>${Number(e.amount).toFixed(2)} جنيه <button class="small-btn danger" onclick="deleteExpense('${e.id}')">🗑️</button></span>
-                </div>
-            `;
-        });
-        container.innerHTML = html;
-        // set default date
-        document.getElementById('expense-date').value = todayStr();
-    }
-
-    function addExpense() {
-        const desc = document.getElementById('expense-desc').value.trim();
-        const amount = parseFloat(document.getElementById('expense-amount').value);
-        const date = document.getElementById('expense-date').value;
-        const category = document.getElementById('expense-category').value.trim();
-        if (!desc || !amount || !date) return alert('املأ جميع الحقول');
-        const data = getData();
-        data.expenses.push({ id: generateId(), desc, amount, date, category: category || 'عام' });
-        saveData(data);
-        document.getElementById('expense-desc').value = '';
-        document.getElementById('expense-amount').value = '';
-        document.getElementById('expense-category').value = '';
-        renderAll();
-    }
-
-    function deleteExpense(id) {
-        if (!confirm('حذف المصروف؟')) return;
-        const data = getData();
-        data.expenses = data.expenses.filter(e => e.id !== id);
-        saveData(data);
-        renderAll();
-    }
-
-    // ----- EXPENSE CHART (pie) -----
-    function renderExpenseChart() {
-        const data = getData();
-        const ctx = document.getElementById('expenseChart').getContext('2d');
-        // group by category
-        const catMap = {};
-        data.expenses.forEach(e => {
-            const cat = e.category || 'عام';
-            catMap[cat] = (catMap[cat] || 0) + Number(e.amount);
-        });
-        const labels = Object.keys(catMap);
-        const values = Object.values(catMap);
-        if (window.expenseChartInstance) window.expenseChartInstance.destroy();
-        if (labels.length === 0) {
-            window.expenseChartInstance = new Chart(ctx, {
-                type: 'pie',
-                data: { labels: ['لا توجد بيانات'], datasets: [{ data: [1], backgroundColor: ['#e2e8f0'] }] },
-                options: { plugins: { legend: { display: false } } }
-            });
-            return;
-        }
-        window.expenseChartInstance = new Chart(ctx, {
-            type: 'pie',
-            data: {
-                labels: labels,
-                datasets: [{
-                    data: values,
-                    backgroundColor: ['#3b82f6','#f59e0b','#10b981','#ef4444','#8b5cf6','#ec4899','#14b8a6']
-                }]
-            },
-            options: {
-                plugins: {
-                    legend: { position: 'bottom' }
-                }
-            }
-        });
-    }
-
-    // ----------------------------------------------
-    // TABS
-    // ----------------------------------------------
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.getElementById(this.dataset.tab).classList.add('active');
-            // re-render charts if needed
-            if (this.dataset.tab === 'expenses') renderExpenseChart();
-        });
-    });
-
-    // ----------------------------------------------
-    // INIT
-    // ----------------------------------------------
-    renderAll();
-
-    // auto-save on tab close? not needed, data saved on each action.
-</script>
-</body>
-</html>
+function addGoal(){const input=document.getElementById('goal-name');const name=input.value.trim();if(!name)return alert('Enter goal name');const data=getData();data.goals.push({id:generateId(),name,habits:[]});saveData(data);input.value='';renderAll();}
+function deleteGoal(goalId){if(!confirm('Delete this goal and all its habits?'))return;const data=getData();data.goals=data.goals.filter(g=>g.id!==goalId);saveData(data);renderAll();}
+function addHabit(goalId){const name=prompt('Enter habit name (e.g. Code for 1 hour)');if(!name)return;const data=getData();const goal=data.goals.find(g=>g.id===goalId);if(!goal)return;goal.habits.push({id:generateId(),name,log:{}});saveData(data);renderAll();}
+function toggleHabit(goalId,habitId){const data=getData();const goal=data.goals.find(g=>g.id===goalId);if(!goal)return;const habit=goal.habits.find(h=>h.id===habitId);if(!habit)return;if(!habit.log)habit.log={};const today=todayStr();habit.log[today]=!habit.log[today];saveData(data);renderAll();}
+function deleteHabit(goalId,habitId){if(!confirm('Delete this habit?'))return;const data=getData();const goal=data.goals.find(g=>g.id===goalId);if(!goal)return;goal.habits=goal.habits.filter(h=>h.id!==habitId);saveData(data);renderAll();}
+function showHabitChart(goalId,habitId){const data=getData();const goal=data.goals.find(g=>g.id===goalId);if(!goal)return;const habit=goal.habits.find(h=>h.id===habitId);if(!habit)return;const labels=[];const values=[];for(let i=29;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const ds=d.toISOString().slice(0,10);labels.push(ds);values.push(habit.log&&habit.log[ds]?1:0);}const win=window.open('','_blank','width=600,height=400');win.document.write('<html><head><title>Chart: '+habit.name+'</title><script src="https://cdn.jsdelivr.net/npm/chart.js"><\/script><style>body{font-family:Inter,sans-serif;padding:30px;background:#0b1120;color:#e2e8f0;direction:ltr;}<\/style></head><body><h2>'+habit.name+'</h2><canvas id="chart" width="500" height="300"></canvas><script>const ctx=document.getElementById("chart").getContext("2d");new Chart(ctx,{type:"bar",data:{labels:JSON.parse(\''+JSON.stringify(labels)+'\'),datasets:[{label:"Completed (1=Yes)",data:JSON.parse(\''+JSON.stringify(values)+'\'),backgroundColor:"#3b82f6"}]},options:{scales:{y:{min:0,max:1,ticks:{stepSize:1}}}}});<\/script></body></html>');win.document.close
