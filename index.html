@@ -15,7 +15,6 @@
             color: #e8e8f0;
             padding: 20px;
             min-height: 100vh;
-            transition: background 0.3s, color 0.3s;
             background-image: radial-gradient(ellipse at 50% 0%, #1a1a2e 0%, #0a0a0f 70%);
         }
         .app { max-width: 1400px; margin: auto; }
@@ -233,7 +232,7 @@
         .small-btn { padding: 6px 14px; font-size: 0.75rem; border-radius: 30px; box-shadow: none; }
 
         /* ITEMS */
-        .goal-item, .habit-item, .expense-item, .task-item {
+        .goal-item, .habit-item, .expense-item, .task-item, .focus-item {
             background: rgba(255,255,255,0.03);
             padding: 14px 18px;
             border-radius: 14px;
@@ -246,13 +245,14 @@
             gap: 12px;
             transition: 0.3s;
         }
-        .goal-item:hover, .habit-item:hover, .expense-item:hover, .task-item:hover {
+        .goal-item:hover, .habit-item:hover, .expense-item:hover, .task-item:hover, .focus-item:hover {
             background: rgba(255,255,255,0.05);
             border-left-color: #34d399;
         }
         .habit-item { border-left-color: #8b5cf6; }
         .task-item { border-left-color: #f59e0b; }
         .expense-item { border-left-color: #10b981; }
+        .focus-item { border-left-color: #f472b6; }
 
         .badge {
             background: rgba(255,255,255,0.06);
@@ -262,6 +262,9 @@
             font-weight: 600;
             color: #9ca3af;
         }
+        .badge-success { background: rgba(16,185,129,0.2); color: #34d399; }
+        .badge-danger { background: rgba(239,68,68,0.2); color: #ef4444; }
+        .badge-warning { background: rgba(245,158,11,0.2); color: #f59e0b; }
 
         .progress-bar {
             background: rgba(255,255,255,0.06);
@@ -282,7 +285,8 @@
 
         .chart-container { max-width: 450px; margin: 20px auto; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        @media (max-width: 700px) { .grid-2 { grid-template-columns: 1fr; } .header { flex-direction: column; gap: 12px; text-align: center; } }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+        @media (max-width: 700px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } .header { flex-direction: column; gap: 12px; text-align: center; } }
 
         .review-box {
             background: rgba(255,255,255,0.03);
@@ -333,9 +337,92 @@
             font-weight: 800;
             color: #34d399;
         }
-        .glow-text {
-            text-shadow: 0 0 40px rgba(16,185,129,0.2);
+
+        /* Habit Sheet */
+        .habit-sheet {
+            background: rgba(255,255,255,0.02);
+            border-radius: 14px;
+            padding: 16px;
+            margin-top: 12px;
+            border: 1px solid rgba(255,255,255,0.04);
+            max-height: 300px;
+            overflow-y: auto;
         }
+        .habit-sheet table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        .habit-sheet th {
+            text-align: right;
+            padding: 8px 12px;
+            color: #6b7280;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .habit-sheet td {
+            padding: 6px 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+        .habit-sheet .done { color: #34d399; }
+        .habit-sheet .not-done { color: #6b7280; }
+        .habit-stats {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 10px 0;
+        }
+        .habit-stat {
+            background: rgba(255,255,255,0.03);
+            padding: 8px 16px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.04);
+        }
+        .habit-stat span { color: #34d399; font-weight: 700; }
+
+        .habit-log-form {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 10px 0;
+            align-items: center;
+        }
+        .habit-log-form input[type="date"] { width: auto; flex: 1; min-width: 120px; }
+        .habit-log-form input[type="text"] { flex: 2; min-width: 150px; }
+        .habit-log-form button { width: auto; }
+
+        /* Timer */
+        .timer-display {
+            font-size: 4rem;
+            font-weight: 800;
+            text-align: center;
+            color: #34d399;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 4px;
+            text-shadow: 0 0 60px rgba(16,185,129,0.1);
+        }
+        .timer-controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* Smart expense suggestions */
+        .suggestion-box {
+            background: rgba(16,185,129,0.05);
+            border: 1px solid rgba(16,185,129,0.1);
+            border-radius: 14px;
+            padding: 16px 20px;
+            margin: 8px 0;
+        }
+        .suggestion-box .icon { color: #34d399; margin-right: 10px; }
+        .suggestion-box.warning { background: rgba(245,158,11,0.05); border-color: rgba(245,158,11,0.1); }
+        .suggestion-box.warning .icon { color: #f59e0b; }
+        .suggestion-box.danger { background: rgba(239,68,68,0.05); border-color: rgba(239,68,68,0.1); }
+        .suggestion-box.danger .icon { color: #ef4444; }
+        .suggestion-box.success { background: rgba(16,185,129,0.05); border-color: rgba(16,185,129,0.1); }
+        .suggestion-box.success .icon { color: #34d399; }
     </style>
 </head>
 <body>
@@ -370,6 +457,7 @@
         <div class="tabs">
             <button class="tab-btn active" data-tab="dashboard"><i class="fas fa-chart-pie"></i> Dashboard</button>
             <button class="tab-btn" data-tab="goals"><i class="fas fa-bullseye"></i> Goals & Habits</button>
+            <button class="tab-btn" data-tab="focus"><i class="fas fa-clock"></i> Focus</button>
             <button class="tab-btn" data-tab="content"><i class="fas fa-calendar-day"></i> Content</button>
             <button class="tab-btn" data-tab="reviews"><i class="fas fa-history"></i> Reviews</button>
             <button class="tab-btn" data-tab="expenses"><i class="fas fa-wallet"></i> Expenses</button>
@@ -388,7 +476,7 @@
                     <div style="text-align:left;">
                         <div class="text-muted">Overall Life Progress</div>
                         <div style="font-size:1.4rem; font-weight:700; color:#34d399;" id="globalDetail">0%</div>
-                        <div class="text-muted" style="font-size:0.8rem;">Based on goals, habits, tasks & expenses</div>
+                        <div class="text-muted" style="font-size:0.8rem;">Based on goals, habits, tasks, focus & expenses</div>
                     </div>
                 </div>
             </div>
@@ -410,6 +498,41 @@
             <div id="goals-list"></div>
         </div>
 
+        <!-- FOCUS -->
+        <div id="focus" class="tab-content">
+            <h2 style="margin-bottom:20px; font-weight:800;"><i class="fas fa-clock" style="color:#34d399;"></i> Focus Timer</h2>
+            
+            <div class="card">
+                <h3><i class="fas fa-stopwatch"></i> Pomodoro Timer</h3>
+                <div class="timer-display" id="timerDisplay">25:00</div>
+                <div class="timer-controls">
+                    <button onclick="startTimer()"><i class="fas fa-play"></i> Start</button>
+                    <button onclick="pauseTimer()"><i class="fas fa-pause"></i> Pause</button>
+                    <button onclick="resetTimer()" class="secondary"><i class="fas fa-undo"></i> Reset</button>
+                    <button onclick="logFocusSession()" class="secondary"><i class="fas fa-save"></i> Save Session</button>
+                </div>
+                <div class="flex" style="margin-top:12px;">
+                    <div class="flex-1"><input type="number" id="timerMinutes" value="25" placeholder="Minutes" style="width:auto;flex:1;" /></div>
+                    <div class="flex-1"><input type="text" id="timerTask" placeholder="What are you working on?" style="flex:2;" /></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3><i class="fas fa-chart-bar"></i> Focus Statistics</h3>
+                <div class="grid-3">
+                    <div class="habit-stat">⏱️ Total Sessions: <span id="focusTotalSessions">0</span></div>
+                    <div class="habit-stat">🕐 Total Hours: <span id="focusTotalHours">0</span></div>
+                    <div class="habit-stat">📊 Avg Daily: <span id="focusAvgDaily">0h</span></div>
+                </div>
+                <div class="chart-container"><canvas id="focusChart"></canvas></div>
+            </div>
+
+            <div class="card">
+                <h3><i class="fas fa-list"></i> Session History</h3>
+                <div id="focusSessionsList"></div>
+            </div>
+        </div>
+
         <!-- CONTENT -->
         <div id="content" class="tab-content">
             <h2 style="margin-bottom:20px; font-weight:800;"><i class="fas fa-calendar-day" style="color:#34d399;"></i> Content Schedule</h2>
@@ -426,8 +549,31 @@
 
         <!-- EXPENSES -->
         <div id="expenses" class="tab-content">
-            <h2 style="margin-bottom:20px; font-weight:800;"><i class="fas fa-wallet" style="color:#34d399;"></i> Expenses</h2>
+            <h2 style="margin-bottom:20px; font-weight:800;"><i class="fas fa-wallet" style="color:#34d399;"></i> Smart Expenses</h2>
+            
+            <div class="card">
+                <h3><i class="fas fa-piggy-bank"></i> Balance & Budget</h3>
+                <div class="flex">
+                    <div class="flex-1">
+                        <label class="text-muted">Current Balance</label>
+                        <input type="number" id="currentBalance" placeholder="Enter your balance..." step="0.01" />
+                        <button onclick="updateBalance()" class="small-btn" style="margin-top:8px;"><i class="fas fa-save"></i> Update Balance</button>
+                    </div>
+                    <div class="flex-1">
+                        <div style="font-size:2rem;font-weight:800;color:#34d399;" id="balanceDisplay">$0</div>
+                        <div class="text-muted">Total Expenses: <span id="totalExpensesDisplay">$0</span></div>
+                        <div class="text-muted">Remaining: <span id="remainingBalance" style="color:#34d399;">$0</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3><i class="fas fa-lightbulb"></i> Smart Suggestions</h3>
+                <div id="smartSuggestions"></div>
+            </div>
+
             <div class="card"><h3><i class="fas fa-plus-circle"></i> Add Expense</h3><div class="flex"><div class="flex-1"><input type="text" id="expense-desc" placeholder="Description" /></div><div class="flex-1"><input type="number" id="expense-amount" placeholder="Amount" /></div><div class="flex-1"><input type="date" id="expense-date" /></div><div class="flex-1"><input type="text" id="expense-category" placeholder="Category (e.g. Food)" /></div><button onclick="addExpense()"><i class="fas fa-plus"></i> Add</button></div></div>
+            
             <div class="card"><h3><i class="fas fa-chart-pie"></i> Expense Distribution</h3><div class="chart-container"><canvas id="expenseChart"></canvas></div></div>
             <div id="expenses-list"></div>
         </div>
@@ -450,6 +596,9 @@ function login() {
         input.value = '';
         renderAll();
         generateAutoReview();
+        updateSmartSuggestions();
+        loadBalance();
+        renderFocusChart();
     } else {
         error.textContent = '❌ Incorrect password. Try again.';
         input.value = '';
@@ -465,15 +614,108 @@ function logout() {
 
 // ==================== MAIN ====================
 const STORAGE_KEY = 'lifeTrackerData';
-function getData(){const raw=localStorage.getItem(STORAGE_KEY);if(raw)return JSON.parse(raw);return{goals:[],tasks:[],monthlyReviews:[],yearlyReviews:[],expenses:[]};}
+const BALANCE_KEY = 'lifeTrackerBalance';
+function getData(){const raw=localStorage.getItem(STORAGE_KEY);if(raw)return JSON.parse(raw);return{goals:[],tasks:[],monthlyReviews:[],yearlyReviews:[],expenses:[],focusSessions:[]};}
 function saveData(data){localStorage.setItem(STORAGE_KEY,JSON.stringify(data));}
 function generateId(){return Date.now()+'_'+Math.random().toString(36).slice(2,6);}
 function todayStr(){return new Date().toISOString().slice(0,10);}
 
-function renderAll(){renderDashboard();renderGoals();renderTasks();renderMonthlyReviews();renderYearlyReviews();renderExpenses();renderExpenseChart();updateGlobalProgress();}
+function renderAll(){renderDashboard();renderGoals();renderTasks();renderMonthlyReviews();renderYearlyReviews();renderExpenses();renderExpenseChart();updateGlobalProgress();renderFocusSessions();renderFocusChart();updateSmartSuggestions();loadBalance();}
 
 function toggleTheme(){document.body.classList.toggle('light');localStorage.setItem('theme',document.body.classList.contains('light')?'light':'dark');}
 (function(){if(localStorage.getItem('theme')==='light')document.body.classList.add('light');})();
+
+// ==================== BALANCE ====================
+function loadBalance() {
+    const balance = parseFloat(localStorage.getItem(BALANCE_KEY)) || 0;
+    document.getElementById('balanceDisplay').innerText = '$' + balance.toFixed(2);
+    document.getElementById('currentBalance').value = balance;
+    updateBalanceDisplay();
+}
+function updateBalance() {
+    const val = parseFloat(document.getElementById('currentBalance').value);
+    if (!isNaN(val) && val >= 0) {
+        localStorage.setItem(BALANCE_KEY, val.toString());
+        loadBalance();
+        updateSmartSuggestions();
+    } else {
+        alert('Enter a valid balance');
+    }
+}
+function getBalance() { return parseFloat(localStorage.getItem(BALANCE_KEY)) || 0; }
+function updateBalanceDisplay() {
+    const data = getData();
+    const totalExp = data.expenses.reduce((s,e) => s + Number(e.amount), 0);
+    const balance = getBalance();
+    document.getElementById('totalExpensesDisplay').innerText = '$' + totalExp.toFixed(2);
+    document.getElementById('remainingBalance').innerText = '$' + (balance - totalExp).toFixed(2);
+    document.getElementById('remainingBalance').style.color = (balance - totalExp) < 0 ? '#ef4444' : '#34d399';
+}
+
+// ==================== SMART SUGGESTIONS ====================
+function updateSmartSuggestions() {
+    const data = getData();
+    const expenses = data.expenses;
+    const balance = getBalance();
+    const totalExp = expenses.reduce((s,e) => s + Number(e.amount), 0);
+    const remaining = balance - totalExp;
+    
+    // Category breakdown
+    const catMap = {};
+    expenses.forEach(e => { const cat = e.category || 'General'; catMap[cat] = (catMap[cat] || 0) + Number(e.amount); });
+    const sortedCats = Object.entries(catMap).sort((a,b) => b[1] - a[1]);
+    
+    let suggestions = [];
+    
+    // Balance alerts
+    if (remaining < 0) {
+        suggestions.push({ type: 'danger', icon: '🚨', text: `You've exceeded your balance by $${Math.abs(remaining).toFixed(2)}! Consider cutting unnecessary expenses.` });
+    } else if (remaining < balance * 0.1 && balance > 0) {
+        suggestions.push({ type: 'warning', icon: '⚠️', text: `You only have $${remaining.toFixed(2)} left (${Math.round((remaining/balance)*100)}% of your balance). Be careful with spending!` });
+    } else if (remaining > balance * 0.5 && balance > 0) {
+        suggestions.push({ type: 'success', icon: '✅', text: `Great job! You still have $${remaining.toFixed(2)} (${Math.round((remaining/balance)*100)}% of your balance). Keep it up!` });
+    }
+    
+    // Category insights
+    if (sortedCats.length > 0) {
+        const topCat = sortedCats[0];
+        const totalSpent = expenses.reduce((s,e) => s + Number(e.amount), 0);
+        const topPercent = Math.round((topCat[1] / totalSpent) * 100);
+        if (topPercent > 40) {
+            suggestions.push({ type: 'warning', icon: '📊', text: `You spend ${topPercent}% of your money on "${topCat[0]}". Consider diversifying your spending.` });
+        }
+        if (topCat[0].toLowerCase() === 'food' && topPercent > 30) {
+            suggestions.push({ type: 'warning', icon: '🍔', text: `You spend ${topPercent}% on food. Try meal prepping to save money!` });
+        }
+        if (topCat[0].toLowerCase() === 'entertainment' && topPercent > 25) {
+            suggestions.push({ type: 'warning', icon: '🎮', text: `You spend ${topPercent}% on entertainment. Consider free alternatives.` });
+        }
+    }
+    
+    // Goal-based suggestions
+    const goals = data.goals;
+    if (goals.length > 0 && remaining > 100) {
+        suggestions.push({ type: 'success', icon: '🎯', text: `You have $${remaining.toFixed(2)} left. Consider allocating some to your goals: ${goals.map(g => g.name).join(', ')}` });
+    }
+    
+    // Monthly average
+    if (expenses.length > 0) {
+        const avg = totalExp / Math.max(1, expenses.length);
+        if (avg > 50) {
+            suggestions.push({ type: 'info', icon: '📈', text: `Your average expense is $${avg.toFixed(2)}. Try to reduce it to $${Math.round(avg * 0.7)} to save more.` });
+        }
+    }
+    
+    // If no suggestions
+    if (suggestions.length === 0) {
+        suggestions.push({ type: 'success', icon: '🌟', text: 'Everything looks great! Keep tracking your expenses and stay on top of your goals.' });
+    }
+    
+    const container = document.getElementById('smartSuggestions');
+    container.innerHTML = suggestions.map(s => 
+        `<div class="suggestion-box ${s.type}"><span class="icon">${s.icon}</span> ${s.text}</div>`
+    ).join('');
+}
 
 // ==================== GLOBAL PROGRESS ====================
 function updateGlobalProgress() {
@@ -482,9 +724,10 @@ function updateGlobalProgress() {
     const habits = goals.flatMap(g => g.habits);
     const tasks = data.tasks;
     const expenses = data.expenses;
+    const focusSessions = data.focusSessions || [];
 
     let habitDone = 0;
-    habits.forEach(h => { if (h.log && h.log[todayStr()] === true) habitDone++; });
+    habits.forEach(h => { if (h.log && h.log[todayStr()] && h.log[todayStr()].done) habitDone++; });
     const habitRatio = habits.length ? habitDone / habits.length : 0;
 
     let tasksDone = 0;
@@ -492,11 +735,14 @@ function updateGlobalProgress() {
     todayTasks.forEach(t => { if (t.done) tasksDone++; });
     const taskRatio = todayTasks.length ? tasksDone / todayTasks.length : 0;
 
-    const goalRatio = goals.length ? (goals.filter(g => g.habits.some(h => h.log && h.log[todayStr()] === true)).length / goals.length) : 0;
+    const goalRatio = goals.length ? (goals.filter(g => g.habits.some(h => h.log && h.log[todayStr()] && h.log[todayStr()].done)).length / goals.length) : 0;
 
     const expenseRatio = expenses.length ? Math.min(1, expenses.reduce((s,e) => s + Number(e.amount), 0) / 1000) : 0;
+    
+    const focusHours = focusSessions.reduce((s, f) => s + f.duration, 0);
+    const focusRatio = Math.min(1, focusHours / 2);
 
-    const global = (habitRatio * 0.35) + (taskRatio * 0.25) + (goalRatio * 0.30) + (expenseRatio * 0.10);
+    const global = (habitRatio * 0.30) + (taskRatio * 0.20) + (goalRatio * 0.25) + (expenseRatio * 0.10) + (focusRatio * 0.15);
     const percent = Math.round(Math.min(1, global) * 100);
 
     const ring = document.getElementById('globalRing');
@@ -514,20 +760,26 @@ function generateAutoReview() {
     const habits = goals.flatMap(g => g.habits);
     const tasksToday = data.tasks.filter(t => t.date === todayStr());
     const expenses = data.expenses;
+    const focusSessions = data.focusSessions || [];
 
     let habitDone = 0;
-    habits.forEach(h => { if (h.log && h.log[todayStr()] === true) habitDone++; });
+    habits.forEach(h => { if (h.log && h.log[todayStr()] && h.log[todayStr()].done) habitDone++; });
     const tasksDone = tasksToday.filter(t => t.done).length;
+    const totalFocusHours = focusSessions.reduce((s, f) => s + f.duration, 0);
 
     let review = '📊 Daily Auto-Review:\n';
     review += `• Habits: ${habitDone}/${habits.length} completed today.\n`;
     review += `• Tasks: ${tasksDone}/${tasksToday.length} tasks done today.\n`;
     review += `• Goals: ${goals.length} active goals.\n`;
+    review += `• Focus: ${focusSessions.length} sessions (${totalFocusHours.toFixed(1)}h total).\n`;
     review += `• Expenses: ${expenses.length} total entries.\n`;
 
     if (habitDone === habits.length && habits.length > 0) review += '✅ Great job! You completed all your habits today!\n';
     else if (habitDone > 0) review += '🔄 Keep going! You\'re making progress.\n';
     else review += '🌱 Start your habits today to build momentum.\n';
+    
+    if (totalFocusHours > 1) review += `🧘 Excellent focus! You spent ${totalFocusHours.toFixed(1)} hours in deep work.\n`;
+    else if (totalFocusHours > 0) review += '⏳ Good start with focus. Try to increase your focus time tomorrow.\n';
 
     const totalExpense = expenses.reduce((s,e) => s + Number(e.amount), 0);
     if (totalExpense > 100) review += `💸 Total expenses: $${totalExpense.toFixed(2)}. Consider budgeting.\n`;
@@ -545,13 +797,13 @@ function renderDashboard() {
 
     document.getElementById('dash-goals-count').innerText = goals.length;
     let doneHabitsToday = 0;
-    habits.forEach(h => { if (h.log && h.log[todayStr()] === true) doneHabitsToday++; });
+    habits.forEach(h => { if (h.log && h.log[todayStr()] && h.log[todayStr()].done) doneHabitsToday++; });
     document.getElementById('dash-habits-count').innerText = doneHabitsToday + ' / ' + habits.length + ' today';
     const habitPercent = habits.length ? Math.round((doneHabitsToday / habits.length) * 100) : 0;
     document.getElementById('dash-habits-progress').style.width = habitPercent + '%';
 
     let goalsWithHabitDone = 0;
-    goals.forEach(g => { const anyDone = g.habits.some(h => h.log && h.log[todayStr()] === true); if (anyDone) goalsWithHabitDone++; });
+    goals.forEach(g => { const anyDone = g.habits.some(h => h.log && h.log[todayStr()] && h.log[todayStr()].done); if (anyDone) goalsWithHabitDone++; });
     document.getElementById('dash-goals-progress').style.width = goals.length ? Math.round((goalsWithHabitDone / goals.length) * 100) + '%' : '0%';
     document.getElementById('dash-goals-detail').innerText = goalsWithHabitDone + ' of ' + goals.length + ' goals with habit done today';
 
@@ -577,23 +829,250 @@ function renderGoals() {
     let html = '';
     data.goals.forEach((goal) => {
         const habitsHtml = goal.habits.map(h => {
-            const doneToday = h.log && h.log[todayStr()] === true;
-            let days = [];
-            for (let i = 6; i >= 0; i--) { const d = new Date(); d.setDate(d.getDate() - i); const ds = d.toISOString().slice(0,10); days.push(h.log && h.log[ds] ? 1 : 0); }
-            const percent = Math.round((days.reduce((a,b) => a + b, 0) / 7) * 100);
-            return `<div class="habit-item"><span><strong>${h.name}</strong> <span class="badge">Last 7 days: ${percent}%</span></span><div><button class="small-btn ${doneToday ? 'secondary' : ''}" onclick="toggleHabit('${goal.id}','${h.id}')">${doneToday ? '<i class="fas fa-check"></i> Done' : '<i class="fas fa-circle"></i> Log today'}</button><button class="small-btn danger" onclick="deleteHabit('${goal.id}','${h.id}')"><i class="fas fa-trash"></i></button><button class="small-btn secondary" onclick="showHabitChart('${goal.id}','${h.id}')"><i class="fas fa-chart-bar"></i> Chart</button></div></div>`;
+            const todayLog = h.log && h.log[todayStr()];
+            const doneToday = todayLog && todayLog.done;
+            
+            const entries = h.log ? Object.entries(h.log) : [];
+            const totalDays = entries.length;
+            const doneDays = entries.filter(([date, entry]) => entry.done).length;
+            const completionRate = totalDays > 0 ? Math.round((doneDays / totalDays) * 100) : 0;
+            
+            let streak = 0;
+            let currentStreak = 0;
+            const sortedDates = Object.keys(h.log || {}).sort();
+            for (let i = sortedDates.length - 1; i >= 0; i--) {
+                if (h.log[sortedDates[i]].done) {
+                    currentStreak++;
+                    if (currentStreak > streak) streak = currentStreak;
+                } else {
+                    break;
+                }
+            }
+            
+            let sheetRows = '';
+            const now = new Date();
+            for (let i = 29; i >= 0; i--) {
+                const d = new Date(now);
+                d.setDate(d.getDate() - i);
+                const ds = d.toISOString().slice(0,10);
+                const entry = h.log && h.log[ds];
+                const isDone = entry && entry.done;
+                const note = entry && entry.note ? entry.note : '';
+                sheetRows += `<tr><td>${ds}</td><td class="${isDone ? 'done' : 'not-done'}">${isDone ? '✅ Done' : '❌ Missed'}</td><td style="font-size:0.75rem;color:#6b7280;">${note}</td></tr>`;
+            }
+            
+            return `<div class="habit-item">
+                <div style="width:100%;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+                        <span><strong>${h.name}</strong></span>
+                        <div>
+                            <button class="small-btn ${doneToday ? 'secondary' : ''}" onclick="toggleHabit('${goal.id}','${h.id}')">
+                                ${doneToday ? '<i class="fas fa-check"></i> Done' : '<i class="fas fa-circle"></i> Log today'}
+                            </button>
+                            <button class="small-btn danger" onclick="deleteHabit('${goal.id}','${h.id}')"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                    <div class="habit-stats">
+                        <div class="habit-stat">📅 Total Days: <span>${totalDays}</span></div>
+                        <div class="habit-stat">✅ Done: <span>${doneDays}</span></div>
+                        <div class="habit-stat">📊 Rate: <span>${completionRate}%</span></div>
+                        <div class="habit-stat">🔥 Streak: <span>${currentStreak} days</span></div>
+                        <div class="habit-stat">🏆 Best Streak: <span>${streak} days</span></div>
+                    </div>
+                    <div class="habit-log-form">
+                        <input type="date" id="habit-date-${h.id}" value="${todayStr()}" />
+                        <input type="text" id="habit-note-${h.id}" placeholder="Note (optional)" />
+                        <button class="small-btn secondary" onclick="logHabitDay('${goal.id}','${h.id}')"><i class="fas fa-plus"></i> Log Day</button>
+                        <button class="small-btn secondary" onclick="toggleHabitSheet('${h.id}')"><i class="fas fa-table"></i> Toggle Sheet</button>
+                    </div>
+                    <div id="habit-sheet-${h.id}" class="habit-sheet" style="display:none;">
+                        <table><thead><tr><th>Date</th><th>Status</th><th>Note</th></tr></thead><tbody>${sheetRows}</tbody></table>
+                    </div>
+                </div>
+            </div>`;
         }).join('');
         html += `<div class="card"><h3><span><i class="fas fa-flag"></i> ${goal.name}</span><span><button class="small-btn" onclick="addHabit('${goal.id}')"><i class="fas fa-plus"></i> Habit</button><button class="small-btn danger" onclick="deleteGoal('${goal.id}')"><i class="fas fa-trash"></i> Delete</button></span></h3><div>${habitsHtml || '<div class="text-muted">No habits yet. Add one!</div>'}</div></div>`;
     });
     container.innerHTML = html;
 }
 
+function toggleHabitSheet(habitId) {
+    const sheet = document.getElementById('habit-sheet-' + habitId);
+    if (sheet) sheet.style.display = sheet.style.display === 'none' ? 'block' : 'none';
+}
+
+function logHabitDay(goalId, habitId) {
+    const dateInput = document.getElementById('habit-date-' + habitId);
+    const noteInput = document.getElementById('habit-note-' + habitId);
+    const date = dateInput ? dateInput.value : todayStr();
+    const note = noteInput ? noteInput.value.trim() : '';
+    if (!date) return alert('Select a date');
+    
+    const data = getData();
+    const goal = data.goals.find(g => g.id === goalId);
+    if (!goal) return;
+    const habit = goal.habits.find(h => h.id === habitId);
+    if (!habit) return;
+    if (!habit.log) habit.log = {};
+    habit.log[date] = { done: true, note: note };
+    saveData(data);
+    if (noteInput) noteInput.value = '';
+    renderAll();
+}
+
 function addGoal(){const input = document.getElementById('goal-name'); const name = input.value.trim(); if(!name) return alert('Enter goal name'); const data = getData(); data.goals.push({id: generateId(), name, habits: []}); saveData(data); input.value = ''; renderAll();}
 function deleteGoal(goalId){if(!confirm('Delete this goal and all its habits?')) return; const data = getData(); data.goals = data.goals.filter(g => g.id !== goalId); saveData(data); renderAll();}
 function addHabit(goalId){const name = prompt('Enter habit name (e.g. Code for 1 hour)'); if(!name) return; const data = getData(); const goal = data.goals.find(g => g.id === goalId); if(!goal) return; goal.habits.push({id: generateId(), name, log: {}}); saveData(data); renderAll();}
-function toggleHabit(goalId, habitId){const data = getData(); const goal = data.goals.find(g => g.id === goalId); if(!goal) return; const habit = goal.habits.find(h => h.id === habitId); if(!habit) return; if(!habit.log) habit.log = {}; const today = todayStr(); habit.log[today] = !habit.log[today]; saveData(data); renderAll();}
+function toggleHabit(goalId, habitId){const data = getData(); const goal = data.goals.find(g => g.id === goalId); if(!goal) return; const habit = goal.habits.find(h => h.id === habitId); if(!habit) return; if(!habit.log) habit.log = {}; const today = todayStr(); if(habit.log[today]) { delete habit.log[today]; } else { habit.log[today] = { done: true, note: '' }; } saveData(data); renderAll();}
 function deleteHabit(goalId, habitId){if(!confirm('Delete this habit?')) return; const data = getData(); const goal = data.goals.find(g => g.id === goalId); if(!goal) return; goal.habits = goal.habits.filter(h => h.id !== habitId); saveData(data); renderAll();}
-function showHabitChart(goalId, habitId){const data = getData(); const goal = data.goals.find(g => g.id === goalId); if(!goal) return; const habit = goal.habits.find(h => h.id === habitId); if(!habit) return; const labels = [], values = []; for(let i = 29; i >= 0; i--){const d = new Date(); d.setDate(d.getDate() - i); const ds = d.toISOString().slice(0,10); labels.push(ds); values.push(habit.log && habit.log[ds] ? 1 : 0);} const win = window.open('','_blank','width=600,height=400'); win.document.write(`<html><head><title>Chart: ${habit.name}</title><script src="https://cdn.jsdelivr.net/npm/chart.js"><\/script><style>body{font-family:Inter,sans-serif;padding:30px;background:#0a0a0f;color:#e8e8f0;direction:ltr;}</style></head><body><h2 style="color:#34d399;">${habit.name}</h2><canvas id="chart" width="500" height="300"></canvas><script>const ctx=document.getElementById("chart").getContext("2d");new Chart(ctx,{type:"bar",data:{labels:${JSON.stringify(labels)},datasets:[{label:"Completed (1=Yes)",data:${JSON.stringify(values)},backgroundColor:"#10b981"}]},options:{scales:{y:{min:0,max:1,ticks:{stepSize:1}}}}})<\/script></body></html>`); win.document.close();}
+
+// ==================== FOCUS TIMER ====================
+let timerInterval = null;
+let timerSeconds = 1500;
+let timerRunning = false;
+
+function startTimer() {
+    if (timerRunning) return;
+    const mins = parseInt(document.getElementById('timerMinutes').value) || 25;
+    if (!timerInterval) {
+        timerSeconds = mins * 60;
+        updateTimerDisplay();
+    }
+    timerRunning = true;
+    timerInterval = setInterval(() => {
+        timerSeconds--;
+        updateTimerDisplay();
+        if (timerSeconds <= 0) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            timerRunning = false;
+            alert('⏰ Time is up! Great focus session!');
+        }
+    }, 1000);
+}
+
+function pauseTimer() {
+    clearInterval(timerInterval);
+    timerInterval = null;
+    timerRunning = false;
+}
+
+function resetTimer() {
+    clearInterval(timerInterval);
+    timerInterval = null;
+    timerRunning = false;
+    const mins = parseInt(document.getElementById('timerMinutes').value) || 25;
+    timerSeconds = mins * 60;
+    updateTimerDisplay();
+}
+
+function updateTimerDisplay() {
+    const mins = Math.floor(timerSeconds / 60);
+    const secs = timerSeconds % 60;
+    document.getElementById('timerDisplay').innerText = 
+        String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+}
+
+function logFocusSession() {
+    const task = document.getElementById('timerTask').value.trim() || 'Unnamed session';
+    const mins = parseInt(document.getElementById('timerMinutes').value) || 25;
+    const duration = mins / 60;
+    
+    if (duration <= 0) return alert('Enter a valid duration');
+    
+    const data = getData();
+    if (!data.focusSessions) data.focusSessions = [];
+    data.focusSessions.push({
+        id: generateId(),
+        date: todayStr(),
+        duration: duration,
+        task: task,
+        timestamp: new Date().toISOString()
+    });
+    saveData(data);
+    document.getElementById('timerTask').value = '';
+    renderFocusSessions();
+    renderFocusChart();
+    renderAll();
+    generateAutoReview();
+    alert('✅ Focus session saved!');
+}
+
+function renderFocusSessions() {
+    const data = getData();
+    const sessions = data.focusSessions || [];
+    const container = document.getElementById('focusSessionsList');
+    
+    const totalHours = sessions.reduce((s, f) => s + f.duration, 0);
+    document.getElementById('focusTotalSessions').innerText = sessions.length;
+    document.getElementById('focusTotalHours').innerText = totalHours.toFixed(1) + 'h';
+    
+    // Avg daily
+    const days = new Set(sessions.map(s => s.date)).size || 1;
+    document.getElementById('focusAvgDaily').innerText = (totalHours / days).toFixed(1) + 'h';
+    
+    if (sessions.length === 0) {
+        container.innerHTML = '<div class="text-muted">No focus sessions yet. Start your timer!</div>';
+        return;
+    }
+    
+    let html = '';
+    sessions.slice().reverse().forEach(s => {
+        html += `<div class="focus-item">
+            <span><strong>${s.task}</strong> - ${s.duration.toFixed(1)}h</span>
+            <span class="text-muted">${s.date}</span>
+        </div>`;
+    });
+    container.innerHTML = html;
+}
+
+function renderFocusChart() {
+    const data = getData();
+    const sessions = data.focusSessions || [];
+    const ctx = document.getElementById('focusChart').getContext('2d');
+    
+    // Group by date
+    const dailyMap = {};
+    sessions.forEach(s => {
+        dailyMap[s.date] = (dailyMap[s.date] || 0) + s.duration;
+    });
+    
+    const dates = Object.keys(dailyMap).sort();
+    const hours = dates.map(d => dailyMap[d]);
+    
+    if (window.focusChartInstance) window.focusChartInstance.destroy();
+    
+    if (dates.length === 0) {
+        window.focusChartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: { labels: ['No data'], datasets: [{ label: 'Focus Hours', data: [0], backgroundColor: '#1a1a2e' }] },
+            options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+        });
+        return;
+    }
+    
+    window.focusChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: dates,
+            datasets: [{
+                label: 'Focus Hours',
+                data: hours,
+                backgroundColor: 'rgba(16,185,129,0.6)',
+                borderColor: '#34d399',
+                borderWidth: 2,
+                borderRadius: 8
+            }]
+        },
+        options: {
+            plugins: { legend: { labels: { color: '#e8e8f0' } } },
+            scales: {
+                y: { beginAtZero: true, ticks: { color: '#6b7280' } },
+                x: { ticks: { color: '#6b7280', maxRotation: 45 } }
+            }
+        }
+    });
+}
 
 // ==================== TASKS ====================
 function renderTasks(){const data = getData(); const container = document.getElementById('tasks-container'); const grouped = {}; data.tasks.forEach(t => { if(!grouped[t.date]) grouped[t.date] = []; grouped[t.date].push(t); }); const sortedDates = Object.keys(grouped).sort((a,b) => a.localeCompare(b)); if(sortedDates.length === 0){ container.innerHTML = '<div class="text-muted">No tasks yet. Add one for today!</div>'; return; } let html = ''; sortedDates.forEach(date => { const tasks = grouped[date]; const total = tasks.length; const done = tasks.filter(t => t.done).length; html += `<div class="card"><h3><i class="fas fa-calendar-day"></i> ${date} <span class="badge">${done}/${total} done</span></h3>`; tasks.forEach(t => { html += `<div class="task-item"><span style="${t.done ? 'text-decoration:line-through; color:#6b7280;' : ''}">${t.text}</span><div><button class="small-btn ${t.done ? 'secondary' : ''}" onclick="toggleTask('${t.id}')">${t.done ? '<i class="fas fa-check"></i> Done' : '<i class="fas fa-circle"></i> Complete'}</button><button class="small-btn danger" onclick="deleteTask('${t.id}')"><i class="fas fa-trash"></i></button></div></div>`; }); html += '</div>'; }); container.innerHTML = html; document.getElementById('content-date').value = todayStr();}
@@ -608,19 +1087,23 @@ function renderYearlyReviews(){const data = getData(); const container = documen
 function saveYearlyReview(){const year = document.getElementById('review-year').value; const text = document.getElementById('review-year-text').value.trim(); if(!year || !text) return alert('Enter year and review'); const data = getData(); const idx = data.yearlyReviews.findIndex(r => r.year === year); if(idx > -1) data.yearlyReviews[idx].text = text; else data.yearlyReviews.push({year, text}); saveData(data); document.getElementById('review-year-text').value = ''; renderAll();}
 
 // ==================== EXPENSES ====================
-function renderExpenses(){const data = getData(); const container = document.getElementById('expenses-list'); if(data.expenses.length === 0){ container.innerHTML = '<div class="text-muted">No expenses yet.</div>'; return; } let html = ''; data.expenses.slice().reverse().forEach(e => { html += `<div class="expense-item"><span><strong>${e.desc}</strong> (${e.category || 'Uncategorized'}) - ${e.date}</span><span>$${Number(e.amount).toFixed(2)} <button class="small-btn danger" onclick="deleteExpense('${e.id}')"><i class="fas fa-trash"></i></button></span></div>`; }); container.innerHTML = html; document.getElementById('expense-date').value = todayStr();}
-function addExpense(){const desc = document.getElementById('expense-desc').value.trim(); const amount = parseFloat(document.getElementById('expense-amount').value); const date = document.getElementById('expense-date').value; const category = document.getElementById('expense-category').value.trim(); if(!desc || !amount || !date) return alert('Enter all fields'); const data = getData(); data.expenses.push({id: generateId(), desc, amount, date, category: category || 'General'}); saveData(data); document.getElementById('expense-desc').value = ''; document.getElementById('expense-amount').value = ''; document.getElementById('expense-category').value = ''; renderAll();}
-function deleteExpense(id){if(!confirm('Delete this expense?')) return; const data = getData(); data.expenses = data.expenses.filter(e => e.id !== id); saveData(data); renderAll();}
+function renderExpenses(){const data = getData(); const container = document.getElementById('expenses-list'); if(data.expenses.length === 0){ container.innerHTML = '<div class="text-muted">No expenses yet.</div>'; return; } let html = ''; data.expenses.slice().reverse().forEach(e => { html += `<div class="expense-item"><span><strong>${e.desc}</strong> (${e.category || 'Uncategorized'}) - ${e.date}</span><span>$${Number(e.amount).toFixed(2)} <button class="small-btn danger" onclick="deleteExpense('${e.id}')"><i class="fas fa-trash"></i></button></span></div>`; }); container.innerHTML = html; document.getElementById('expense-date').value = todayStr(); updateBalanceDisplay();}
+function addExpense(){const desc = document.getElementById('expense-desc').value.trim(); const amount = parseFloat(document.getElementById('expense-amount').value); const date = document.getElementById('expense-date').value; const category = document.getElementById('expense-category').value.trim(); if(!desc || !amount || !date) return alert('Enter all fields'); const data = getData(); data.expenses.push({id: generateId(), desc, amount, date, category: category || 'General'}); saveData(data); document.getElementById('expense-desc').value = ''; document.getElementById('expense-amount').value = ''; document.getElementById('expense-category').value = ''; renderAll(); updateSmartSuggestions();}
+function deleteExpense(id){if(!confirm('Delete this expense?')) return; const data = getData(); data.expenses = data.expenses.filter(e => e.id !== id); saveData(data); renderAll(); updateSmartSuggestions();}
 
-// ==================== CHART (PIE - GREEN) ====================
+// ==================== CHART ====================
 function renderExpenseChart(){const data = getData(); const ctx = document.getElementById('expenseChart').getContext('2d'); const catMap = {}; data.expenses.forEach(e => { const cat = e.category || 'General'; catMap[cat] = (catMap[cat] || 0) + Number(e.amount); }); const labels = Object.keys(catMap); const values = Object.values(catMap); if(window.expenseChartInstance) window.expenseChartInstance.destroy(); if(labels.length === 0){ window.expenseChartInstance = new Chart(ctx, {type:'pie', data:{labels:['No data'], datasets:[{data:[1], backgroundColor:['#1a1a2e']}]}, options:{plugins:{legend:{display:false}}}}); return; } window.expenseChartInstance = new Chart(ctx, {type:'pie', data:{labels, datasets:[{data:values, backgroundColor:['#10b981','#34d399','#6ee7b7','#a7f3d0','#d1fae5','#059669','#047857']}]}, options:{plugins:{legend:{position:'bottom', labels:{color:'#e8e8f0'}}}, responsive:true}});}
 
 // ==================== TABS ====================
-document.querySelectorAll('.tab-btn').forEach(btn => { btn.addEventListener('click', function() { document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); this.classList.add('active'); document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); document.getElementById(this.dataset.tab).classList.add('active'); if(this.dataset.tab === 'expenses') renderExpenseChart(); }); });
+document.querySelectorAll('.tab-btn').forEach(btn => { btn.addEventListener('click', function() { document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); this.classList.add('active'); document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); document.getElementById(this.dataset.tab).classList.add('active'); if(this.dataset.tab === 'expenses') { renderExpenseChart(); updateSmartSuggestions(); loadBalance(); } if(this.dataset.tab === 'focus') { renderFocusSessions(); renderFocusChart(); } }); });
 
 // ==================== INIT ====================
 renderAll();
 generateAutoReview();
+loadBalance();
+updateSmartSuggestions();
+renderFocusSessions();
+renderFocusChart();
 </script>
 </body>
 </html>
