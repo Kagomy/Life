@@ -197,6 +197,8 @@
         /* FORMS */
         .flex { display: flex; flex-wrap: wrap; gap: 14px; }
         .flex-1 { flex: 1 1 200px; }
+        .flex-2 { flex: 2 1 300px; }
+        .flex-auto { flex: 0 0 auto; }
         input, select, textarea {
             padding: 12px 16px;
             border-radius: 14px;
@@ -232,7 +234,7 @@
         .small-btn { padding: 6px 14px; font-size: 0.75rem; border-radius: 30px; box-shadow: none; }
 
         /* ITEMS */
-        .goal-item, .habit-item, .expense-item, .task-item, .focus-item {
+        .goal-item, .habit-item, .expense-item, .task-item, .focus-item, .schedule-item {
             background: rgba(255,255,255,0.03);
             padding: 14px 18px;
             border-radius: 14px;
@@ -245,7 +247,7 @@
             gap: 12px;
             transition: 0.3s;
         }
-        .goal-item:hover, .habit-item:hover, .expense-item:hover, .task-item:hover, .focus-item:hover {
+        .goal-item:hover, .habit-item:hover, .expense-item:hover, .task-item:hover, .focus-item:hover, .schedule-item:hover {
             background: rgba(255,255,255,0.05);
             border-left-color: #34d399;
         }
@@ -253,6 +255,7 @@
         .task-item { border-left-color: #f59e0b; }
         .expense-item { border-left-color: #10b981; }
         .focus-item { border-left-color: #f472b6; }
+        .schedule-item { border-left-color: #60a5fa; }
 
         .badge {
             background: rgba(255,255,255,0.06);
@@ -265,6 +268,7 @@
         .badge-success { background: rgba(16,185,129,0.2); color: #34d399; }
         .badge-danger { background: rgba(239,68,68,0.2); color: #ef4444; }
         .badge-warning { background: rgba(245,158,11,0.2); color: #f59e0b; }
+        .badge-blue { background: rgba(96,165,250,0.2); color: #60a5fa; }
 
         .progress-bar {
             background: rgba(255,255,255,0.06);
@@ -423,6 +427,19 @@
         .suggestion-box.danger .icon { color: #ef4444; }
         .suggestion-box.success { background: rgba(16,185,129,0.05); border-color: rgba(16,185,129,0.1); }
         .suggestion-box.success .icon { color: #34d399; }
+
+        /* Schedule time picker */
+        .time-picker {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .time-picker input[type="number"] {
+            width: 60px;
+            text-align: center;
+            padding: 8px;
+        }
+        .time-picker span { color: #6b7280; font-weight: 600; }
     </style>
 </head>
 <body>
@@ -457,7 +474,8 @@
         <div class="tabs">
             <button class="tab-btn active" data-tab="dashboard"><i class="fas fa-chart-pie"></i> Dashboard</button>
             <button class="tab-btn" data-tab="goals"><i class="fas fa-bullseye"></i> Goals & Habits</button>
-            <button class="tab-btn" data-tab="focus"><i class="fas fa-clock"></i> Focus</button>
+            <button class="tab-btn" data-tab="schedule"><i class="fas fa-clock"></i> Schedule</button>
+            <button class="tab-btn" data-tab="focus"><i class="fas fa-stopwatch"></i> Focus</button>
             <button class="tab-btn" data-tab="content"><i class="fas fa-calendar-day"></i> Content</button>
             <button class="tab-btn" data-tab="reviews"><i class="fas fa-history"></i> Reviews</button>
             <button class="tab-btn" data-tab="expenses"><i class="fas fa-wallet"></i> Expenses</button>
@@ -476,7 +494,7 @@
                     <div style="text-align:left;">
                         <div class="text-muted">Overall Life Progress</div>
                         <div style="font-size:1.4rem; font-weight:700; color:#34d399;" id="globalDetail">0%</div>
-                        <div class="text-muted" style="font-size:0.8rem;">Based on goals, habits, tasks, focus & expenses</div>
+                        <div class="text-muted" style="font-size:0.8rem;">Based on goals, habits, schedule, focus & expenses</div>
                     </div>
                 </div>
             </div>
@@ -485,7 +503,7 @@
                 <div class="card"><h3><i class="fas fa-bullseye"></i> Goals</h3><div id="dash-goals-count" style="font-size:2.2rem;font-weight:800;color:#34d399;">0</div><div class="progress-bar"><div id="dash-goals-progress" class="progress-fill" style="width:0%"></div></div><div class="text-muted" id="dash-goals-detail"></div></div>
                 <div class="card"><h3><i class="fas fa-check-circle"></i> Daily Habits</h3><div id="dash-habits-count" style="font-size:2.2rem;font-weight:800;color:#34d399;">0</div><div class="progress-bar"><div id="dash-habits-progress" class="progress-fill" style="width:0%"></div></div><div class="text-muted" id="dash-habits-detail"></div></div>
                 <div class="card"><h3><i class="fas fa-coins"></i> Expenses</h3><div id="dash-expenses-total" style="font-size:2.2rem;font-weight:800;color:#34d399;">$0</div><div class="text-muted" id="dash-expenses-count"></div></div>
-                <div class="card"><h3><i class="fas fa-tasks"></i> Today's Tasks</h3><div id="dash-tasks-today" style="font-size:2.2rem;font-weight:800;color:#34d399;">0</div><div class="text-muted" id="dash-tasks-done"></div></div>
+                <div class="card"><h3><i class="fas fa-calendar-check"></i> Today's Schedule</h3><div id="dash-schedule-today" style="font-size:2.2rem;font-weight:800;color:#34d399;">0</div><div class="text-muted" id="dash-schedule-done"></div></div>
             </div>
             <div class="card"><h3><i class="fas fa-clock"></i> Recent Activity</h3><div id="dash-last-activity" class="text-muted">No activity yet</div></div>
             <div class="card"><h3><i class="fas fa-robot"></i> Auto Review</h3><div id="autoReview" class="text-muted">Generating review...</div></div>
@@ -498,9 +516,47 @@
             <div id="goals-list"></div>
         </div>
 
+        <!-- SCHEDULE -->
+        <div id="schedule" class="tab-content">
+            <h2 style="margin-bottom:20px; font-weight:800;"><i class="fas fa-clock" style="color:#34d399;"></i> Daily Schedule</h2>
+            
+            <div class="card">
+                <h3><i class="fas fa-plus-circle"></i> Add Schedule Item</h3>
+                <div class="flex">
+                    <div class="flex-1">
+                        <input type="date" id="schedule-date" />
+                    </div>
+                    <div class="flex-auto time-picker">
+                        <input type="number" id="schedule-hour" placeholder="HH" min="0" max="23" value="12" style="width:60px;" />
+                        <span>:</span>
+                        <input type="number" id="schedule-minute" placeholder="MM" min="0" max="59" value="0" style="width:60px;" />
+                    </div>
+                    <div class="flex-2">
+                        <input type="text" id="schedule-task" placeholder="Task description" />
+                    </div>
+                    <button onclick="addScheduleItem()"><i class="fas fa-plus"></i> Add</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3><i class="fas fa-chart-bar"></i> Schedule Overview</h3>
+                <div class="grid-3">
+                    <div class="habit-stat">📋 Total Today: <span id="scheduleTotal">0</span></div>
+                    <div class="habit-stat">✅ Completed: <span id="scheduleDone">0</span></div>
+                    <div class="habit-stat">📊 Progress: <span id="schedulePercent">0%</span></div>
+                </div>
+                <div class="chart-container"><canvas id="scheduleChart"></canvas></div>
+            </div>
+
+            <div class="card">
+                <h3><i class="fas fa-list"></i> Your Schedule</h3>
+                <div id="schedule-list"></div>
+            </div>
+        </div>
+
         <!-- FOCUS -->
         <div id="focus" class="tab-content">
-            <h2 style="margin-bottom:20px; font-weight:800;"><i class="fas fa-clock" style="color:#34d399;"></i> Focus Timer</h2>
+            <h2 style="margin-bottom:20px; font-weight:800;"><i class="fas fa-stopwatch" style="color:#34d399;"></i> Focus Timer</h2>
             
             <div class="card">
                 <h3><i class="fas fa-stopwatch"></i> Pomodoro Timer</h3>
@@ -599,6 +655,7 @@ function login() {
         updateSmartSuggestions();
         loadBalance();
         renderFocusChart();
+        renderScheduleChart();
     } else {
         error.textContent = '❌ Incorrect password. Try again.';
         input.value = '';
@@ -615,12 +672,12 @@ function logout() {
 // ==================== MAIN ====================
 const STORAGE_KEY = 'lifeTrackerData';
 const BALANCE_KEY = 'lifeTrackerBalance';
-function getData(){const raw=localStorage.getItem(STORAGE_KEY);if(raw)return JSON.parse(raw);return{goals:[],tasks:[],monthlyReviews:[],yearlyReviews:[],expenses:[],focusSessions:[]};}
+function getData(){const raw=localStorage.getItem(STORAGE_KEY);if(raw)return JSON.parse(raw);return{goals:[],tasks:[],monthlyReviews:[],yearlyReviews:[],expenses:[],focusSessions:[],schedule:[]};}
 function saveData(data){localStorage.setItem(STORAGE_KEY,JSON.stringify(data));}
 function generateId(){return Date.now()+'_'+Math.random().toString(36).slice(2,6);}
 function todayStr(){return new Date().toISOString().slice(0,10);}
 
-function renderAll(){renderDashboard();renderGoals();renderTasks();renderMonthlyReviews();renderYearlyReviews();renderExpenses();renderExpenseChart();updateGlobalProgress();renderFocusSessions();renderFocusChart();updateSmartSuggestions();loadBalance();}
+function renderAll(){renderDashboard();renderGoals();renderTasks();renderMonthlyReviews();renderYearlyReviews();renderExpenses();renderExpenseChart();updateGlobalProgress();renderFocusSessions();renderFocusChart();renderSchedule();renderScheduleChart();updateSmartSuggestions();loadBalance();}
 
 function toggleTheme(){document.body.classList.toggle('light');localStorage.setItem('theme',document.body.classList.contains('light')?'light':'dark');}
 (function(){if(localStorage.getItem('theme')==='light')document.body.classList.add('light');})();
@@ -660,14 +717,12 @@ function updateSmartSuggestions() {
     const totalExp = expenses.reduce((s,e) => s + Number(e.amount), 0);
     const remaining = balance - totalExp;
     
-    // Category breakdown
     const catMap = {};
     expenses.forEach(e => { const cat = e.category || 'General'; catMap[cat] = (catMap[cat] || 0) + Number(e.amount); });
     const sortedCats = Object.entries(catMap).sort((a,b) => b[1] - a[1]);
     
     let suggestions = [];
     
-    // Balance alerts
     if (remaining < 0) {
         suggestions.push({ type: 'danger', icon: '🚨', text: `You've exceeded your balance by $${Math.abs(remaining).toFixed(2)}! Consider cutting unnecessary expenses.` });
     } else if (remaining < balance * 0.1 && balance > 0) {
@@ -676,7 +731,6 @@ function updateSmartSuggestions() {
         suggestions.push({ type: 'success', icon: '✅', text: `Great job! You still have $${remaining.toFixed(2)} (${Math.round((remaining/balance)*100)}% of your balance). Keep it up!` });
     }
     
-    // Category insights
     if (sortedCats.length > 0) {
         const topCat = sortedCats[0];
         const totalSpent = expenses.reduce((s,e) => s + Number(e.amount), 0);
@@ -692,13 +746,11 @@ function updateSmartSuggestions() {
         }
     }
     
-    // Goal-based suggestions
     const goals = data.goals;
     if (goals.length > 0 && remaining > 100) {
         suggestions.push({ type: 'success', icon: '🎯', text: `You have $${remaining.toFixed(2)} left. Consider allocating some to your goals: ${goals.map(g => g.name).join(', ')}` });
     }
     
-    // Monthly average
     if (expenses.length > 0) {
         const avg = totalExp / Math.max(1, expenses.length);
         if (avg > 50) {
@@ -706,7 +758,6 @@ function updateSmartSuggestions() {
         }
     }
     
-    // If no suggestions
     if (suggestions.length === 0) {
         suggestions.push({ type: 'success', icon: '🌟', text: 'Everything looks great! Keep tracking your expenses and stay on top of your goals.' });
     }
@@ -725,6 +776,7 @@ function updateGlobalProgress() {
     const tasks = data.tasks;
     const expenses = data.expenses;
     const focusSessions = data.focusSessions || [];
+    const schedule = data.schedule || [];
 
     let habitDone = 0;
     habits.forEach(h => { if (h.log && h.log[todayStr()] && h.log[todayStr()].done) habitDone++; });
@@ -741,8 +793,12 @@ function updateGlobalProgress() {
     
     const focusHours = focusSessions.reduce((s, f) => s + f.duration, 0);
     const focusRatio = Math.min(1, focusHours / 2);
+    
+    const todaySchedule = schedule.filter(s => s.date === todayStr());
+    const scheduleDone = todaySchedule.filter(s => s.done).length;
+    const scheduleRatio = todaySchedule.length ? scheduleDone / todaySchedule.length : 0;
 
-    const global = (habitRatio * 0.30) + (taskRatio * 0.20) + (goalRatio * 0.25) + (expenseRatio * 0.10) + (focusRatio * 0.15);
+    const global = (habitRatio * 0.25) + (taskRatio * 0.15) + (goalRatio * 0.20) + (expenseRatio * 0.10) + (focusRatio * 0.10) + (scheduleRatio * 0.20);
     const percent = Math.round(Math.min(1, global) * 100);
 
     const ring = document.getElementById('globalRing');
@@ -761,15 +817,19 @@ function generateAutoReview() {
     const tasksToday = data.tasks.filter(t => t.date === todayStr());
     const expenses = data.expenses;
     const focusSessions = data.focusSessions || [];
+    const schedule = data.schedule || [];
+    const todaySchedule = schedule.filter(s => s.date === todayStr());
 
     let habitDone = 0;
     habits.forEach(h => { if (h.log && h.log[todayStr()] && h.log[todayStr()].done) habitDone++; });
     const tasksDone = tasksToday.filter(t => t.done).length;
     const totalFocusHours = focusSessions.reduce((s, f) => s + f.duration, 0);
+    const scheduleDone = todaySchedule.filter(s => s.done).length;
 
     let review = '📊 Daily Auto-Review:\n';
     review += `• Habits: ${habitDone}/${habits.length} completed today.\n`;
-    review += `• Tasks: ${tasksDone}/${tasksToday.length} tasks done today.\n`;
+    review += `• Schedule: ${scheduleDone}/${todaySchedule.length} tasks done today.\n`;
+    review += `• Tasks: ${tasksDone}/${tasksToday.length} content tasks done today.\n`;
     review += `• Goals: ${goals.length} active goals.\n`;
     review += `• Focus: ${focusSessions.length} sessions (${totalFocusHours.toFixed(1)}h total).\n`;
     review += `• Expenses: ${expenses.length} total entries.\n`;
@@ -780,6 +840,9 @@ function generateAutoReview() {
     
     if (totalFocusHours > 1) review += `🧘 Excellent focus! You spent ${totalFocusHours.toFixed(1)} hours in deep work.\n`;
     else if (totalFocusHours > 0) review += '⏳ Good start with focus. Try to increase your focus time tomorrow.\n';
+    
+    if (scheduleDone === todaySchedule.length && todaySchedule.length > 0) review += '📋 You completed your entire daily schedule! Well done!\n';
+    else if (scheduleDone > 0) review += '📋 You\'re making progress on your schedule. Keep going!\n';
 
     const totalExpense = expenses.reduce((s,e) => s + Number(e.amount), 0);
     if (totalExpense > 100) review += `💸 Total expenses: $${totalExpense.toFixed(2)}. Consider budgeting.\n`;
@@ -794,6 +857,8 @@ function renderDashboard() {
     const habits = goals.flatMap(g => g.habits);
     const tasksToday = data.tasks.filter(t => t.date === todayStr());
     const expenses = data.expenses;
+    const schedule = data.schedule || [];
+    const todaySchedule = schedule.filter(s => s.date === todayStr());
 
     document.getElementById('dash-goals-count').innerText = goals.length;
     let doneHabitsToday = 0;
@@ -811,9 +876,9 @@ function renderDashboard() {
     document.getElementById('dash-expenses-total').innerText = '$' + totalExpense.toFixed(2);
     document.getElementById('dash-expenses-count').innerText = 'Total entries: ' + expenses.length;
 
-    const tasksTodayDone = tasksToday.filter(t => t.done).length;
-    document.getElementById('dash-tasks-today').innerText = tasksToday.length;
-    document.getElementById('dash-tasks-done').innerText = 'Done ' + tasksTodayDone + ' of ' + tasksToday.length;
+    const scheduleDone = todaySchedule.filter(s => s.done).length;
+    document.getElementById('dash-schedule-today').innerText = todaySchedule.length;
+    document.getElementById('dash-schedule-done').innerText = 'Done ' + scheduleDone + ' of ' + todaySchedule.length;
 
     let last = 'No activity yet';
     if (expenses.length) { const lastExp = expenses[expenses.length - 1]; last = 'Last expense: ' + lastExp.desc + ' ($' + lastExp.amount + ') on ' + lastExp.date; }
@@ -926,6 +991,161 @@ function addHabit(goalId){const name = prompt('Enter habit name (e.g. Code for 1
 function toggleHabit(goalId, habitId){const data = getData(); const goal = data.goals.find(g => g.id === goalId); if(!goal) return; const habit = goal.habits.find(h => h.id === habitId); if(!habit) return; if(!habit.log) habit.log = {}; const today = todayStr(); if(habit.log[today]) { delete habit.log[today]; } else { habit.log[today] = { done: true, note: '' }; } saveData(data); renderAll();}
 function deleteHabit(goalId, habitId){if(!confirm('Delete this habit?')) return; const data = getData(); const goal = data.goals.find(g => g.id === goalId); if(!goal) return; goal.habits = goal.habits.filter(h => h.id !== habitId); saveData(data); renderAll();}
 
+// ==================== SCHEDULE ====================
+function renderSchedule() {
+    const data = getData();
+    const schedule = data.schedule || [];
+    const container = document.getElementById('schedule-list');
+    
+    // Set default date
+    document.getElementById('schedule-date').value = todayStr();
+    
+    // Filter today's schedule
+    const todaySchedule = schedule.filter(s => s.date === todayStr());
+    const sorted = todaySchedule.sort((a, b) => {
+        if (a.hour !== b.hour) return a.hour - b.hour;
+        return a.minute - b.minute;
+    });
+    
+    // Update stats
+    const total = sorted.length;
+    const done = sorted.filter(s => s.done).length;
+    const percent = total > 0 ? Math.round((done / total) * 100) : 0;
+    document.getElementById('scheduleTotal').innerText = total;
+    document.getElementById('scheduleDone').innerText = done;
+    document.getElementById('schedulePercent').innerText = percent + '%';
+    
+    if (sorted.length === 0) {
+        container.innerHTML = '<div class="text-muted">No schedule items for today. Add your first task!</div>';
+        return;
+    }
+    
+    let html = '';
+    sorted.forEach(s => {
+        const timeStr = String(s.hour).padStart(2, '0') + ':' + String(s.minute).padStart(2, '0');
+        html += `<div class="schedule-item">
+            <span>
+                <span class="badge badge-blue">${timeStr}</span>
+                <strong style="${s.done ? 'text-decoration:line-through; color:#6b7280;' : ''}">${s.task}</strong>
+                ${s.done ? ' <span class="badge badge-success">✅ Done</span>' : ''}
+            </span>
+            <div>
+                <button class="small-btn ${s.done ? 'secondary' : ''}" onclick="toggleScheduleItem('${s.id}')">
+                    ${s.done ? '<i class="fas fa-undo"></i> Undo' : '<i class="fas fa-check"></i> Done'}
+                </button>
+                <button class="small-btn danger" onclick="deleteScheduleItem('${s.id}')"><i class="fas fa-trash"></i></button>
+            </div>
+        </div>`;
+    });
+    container.innerHTML = html;
+    renderScheduleChart();
+}
+
+function addScheduleItem() {
+    const date = document.getElementById('schedule-date').value;
+    const hour = parseInt(document.getElementById('schedule-hour').value) || 0;
+    const minute = parseInt(document.getElementById('schedule-minute').value) || 0;
+    const task = document.getElementById('schedule-task').value.trim();
+    
+    if (!date || !task) return alert('Enter date and task description');
+    if (hour < 0 || hour > 23) return alert('Hour must be between 0 and 23');
+    if (minute < 0 || minute > 59) return alert('Minute must be between 0 and 59');
+    
+    const data = getData();
+    if (!data.schedule) data.schedule = [];
+    data.schedule.push({
+        id: generateId(),
+        date: date,
+        hour: hour,
+        minute: minute,
+        task: task,
+        done: false
+    });
+    saveData(data);
+    document.getElementById('schedule-task').value = '';
+    renderAll();
+    generateAutoReview();
+}
+
+function toggleScheduleItem(id) {
+    const data = getData();
+    const item = data.schedule.find(s => s.id === id);
+    if (!item) return;
+    item.done = !item.done;
+    saveData(data);
+    renderAll();
+    generateAutoReview();
+}
+
+function deleteScheduleItem(id) {
+    if (!confirm('Delete this schedule item?')) return;
+    const data = getData();
+    data.schedule = data.schedule.filter(s => s.id !== id);
+    saveData(data);
+    renderAll();
+}
+
+function renderScheduleChart() {
+    const data = getData();
+    const schedule = data.schedule || [];
+    const ctx = document.getElementById('scheduleChart').getContext('2d');
+    
+    // Group by date
+    const dailyMap = {};
+    schedule.forEach(s => {
+        if (!dailyMap[s.date]) dailyMap[s.date] = { total: 0, done: 0 };
+        dailyMap[s.date].total++;
+        if (s.done) dailyMap[s.date].done++;
+    });
+    
+    const dates = Object.keys(dailyMap).sort();
+    const totalData = dates.map(d => dailyMap[d].total);
+    const doneData = dates.map(d => dailyMap[d].done);
+    
+    if (window.scheduleChartInstance) window.scheduleChartInstance.destroy();
+    
+    if (dates.length === 0) {
+        window.scheduleChartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: { labels: ['No data'], datasets: [{ label: 'Tasks', data: [0], backgroundColor: '#1a1a2e' }] },
+            options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+        });
+        return;
+    }
+    
+    window.scheduleChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: dates,
+            datasets: [
+                {
+                    label: 'Total Tasks',
+                    data: totalData,
+                    backgroundColor: 'rgba(96,165,250,0.4)',
+                    borderColor: '#60a5fa',
+                    borderWidth: 2,
+                    borderRadius: 8
+                },
+                {
+                    label: 'Completed',
+                    data: doneData,
+                    backgroundColor: 'rgba(16,185,129,0.6)',
+                    borderColor: '#34d399',
+                    borderWidth: 2,
+                    borderRadius: 8
+                }
+            ]
+        },
+        options: {
+            plugins: { legend: { labels: { color: '#e8e8f0' } } },
+            scales: {
+                y: { beginAtZero: true, ticks: { color: '#6b7280', stepSize: 1 } },
+                x: { ticks: { color: '#6b7280', maxRotation: 45 } }
+            }
+        }
+    });
+}
+
 // ==================== FOCUS TIMER ====================
 let timerInterval = null;
 let timerSeconds = 1500;
@@ -1007,7 +1227,6 @@ function renderFocusSessions() {
     document.getElementById('focusTotalSessions').innerText = sessions.length;
     document.getElementById('focusTotalHours').innerText = totalHours.toFixed(1) + 'h';
     
-    // Avg daily
     const days = new Set(sessions.map(s => s.date)).size || 1;
     document.getElementById('focusAvgDaily').innerText = (totalHours / days).toFixed(1) + 'h';
     
@@ -1031,7 +1250,6 @@ function renderFocusChart() {
     const sessions = data.focusSessions || [];
     const ctx = document.getElementById('focusChart').getContext('2d');
     
-    // Group by date
     const dailyMap = {};
     sessions.forEach(s => {
         dailyMap[s.date] = (dailyMap[s.date] || 0) + s.duration;
@@ -1058,8 +1276,8 @@ function renderFocusChart() {
             datasets: [{
                 label: 'Focus Hours',
                 data: hours,
-                backgroundColor: 'rgba(16,185,129,0.6)',
-                borderColor: '#34d399',
+                backgroundColor: 'rgba(244,114,182,0.6)',
+                borderColor: '#f472b6',
                 borderWidth: 2,
                 borderRadius: 8
             }]
@@ -1095,7 +1313,7 @@ function deleteExpense(id){if(!confirm('Delete this expense?')) return; const da
 function renderExpenseChart(){const data = getData(); const ctx = document.getElementById('expenseChart').getContext('2d'); const catMap = {}; data.expenses.forEach(e => { const cat = e.category || 'General'; catMap[cat] = (catMap[cat] || 0) + Number(e.amount); }); const labels = Object.keys(catMap); const values = Object.values(catMap); if(window.expenseChartInstance) window.expenseChartInstance.destroy(); if(labels.length === 0){ window.expenseChartInstance = new Chart(ctx, {type:'pie', data:{labels:['No data'], datasets:[{data:[1], backgroundColor:['#1a1a2e']}]}, options:{plugins:{legend:{display:false}}}}); return; } window.expenseChartInstance = new Chart(ctx, {type:'pie', data:{labels, datasets:[{data:values, backgroundColor:['#10b981','#34d399','#6ee7b7','#a7f3d0','#d1fae5','#059669','#047857']}]}, options:{plugins:{legend:{position:'bottom', labels:{color:'#e8e8f0'}}}, responsive:true}});}
 
 // ==================== TABS ====================
-document.querySelectorAll('.tab-btn').forEach(btn => { btn.addEventListener('click', function() { document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); this.classList.add('active'); document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); document.getElementById(this.dataset.tab).classList.add('active'); if(this.dataset.tab === 'expenses') { renderExpenseChart(); updateSmartSuggestions(); loadBalance(); } if(this.dataset.tab === 'focus') { renderFocusSessions(); renderFocusChart(); } }); });
+document.querySelectorAll('.tab-btn').forEach(btn => { btn.addEventListener('click', function() { document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); this.classList.add('active'); document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); document.getElementById(this.dataset.tab).classList.add('active'); if(this.dataset.tab === 'expenses') { renderExpenseChart(); updateSmartSuggestions(); loadBalance(); } if(this.dataset.tab === 'focus') { renderFocusSessions(); renderFocusChart(); } if(this.dataset.tab === 'schedule') { renderSchedule(); renderScheduleChart(); } }); });
 
 // ==================== INIT ====================
 renderAll();
@@ -1104,6 +1322,8 @@ loadBalance();
 updateSmartSuggestions();
 renderFocusSessions();
 renderFocusChart();
+renderSchedule();
+renderScheduleChart();
 </script>
 </body>
 </html>
